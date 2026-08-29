@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AeternaCore OS — Omniscient Longevity Engine (v2.0 Enterprise)</title>
+    <title>AeternaCore OS — Omniscient Longevity Engine (v12.0 Full Bilingual)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Plotly.js -->
@@ -12,11 +12,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; }
-        .tab-active { border-bottom: 3px solid #0d9488; color: #0f766e; font-weight: 700; background: rgba(13, 148, 136, 0.05); }
+        .tab-active { border-bottom: 3px solid #0d9488; color: #0f766e; font-weight: 700; }
         .glass-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
         .kpi-delta-green { background: #d1fae5; color: #065f46; }
         .kpi-delta-red { background: #fee2e2; color: #991b1b; }
-        .kpi-delta-amber { background: #fef3c7; color: #92400e; }
         .lang-btn-active { background: #0d9488; color: #ffffff; font-weight: 700; }
     </style>
 </head>
@@ -36,8 +35,8 @@
                     <button id="btn_pl" onclick="setLanguage('pl')" class="px-3 py-1 rounded-md transition font-semibold lang-btn-active">PL</button>
                     <button id="btn_en" onclick="setLanguage('en')" class="px-3 py-1 rounded-md transition font-semibold text-slate-300 hover:text-white">EN</button>
                 </div>
-                <span class="hidden sm:inline-block bg-teal-900/60 border border-teal-500 text-teal-300 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider">
-                    v2.0 Sovereign Engine
+                <span class="hidden sm:inline-block bg-teal-900/60 border border-teal-500 text-teal-300 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider" data-i18n="badge_tier">
+                    V2.0 SOVEREIGN ENGINE
                 </span>
             </div>
         </div>
@@ -46,18 +45,17 @@
     <!-- MAIN CONTAINER -->
     <main class="max-w-7xl mx-auto p-4 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-        <!-- SIDEBAR: PARAMETRY WEJŚCIOWE -->
+        <!-- SIDEBAR: KONTROLA PARAMETRÓW -->
         <aside class="lg:col-span-4 space-y-6">
-            <div class="glass-card p-6 border-t-4 border-t-teal-600 space-y-5">
-                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <span>🎛</span> <span data-i18n="sidebar_title">Panel Diagnostyczny & LIS</span>
+            <div class="glass-card p-6 border-t-4 border-t-teal-600">
+                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4">
+                    <span>🎛</span> <span data-i18n="sidebar_title">Diagnostic & LIS Parameter Panel</span>
                 </h2>
 
-                <!-- PODSTAWOWE -->
-                <div class="space-y-3 text-sm">
+                <div class="space-y-4 text-sm">
                     <div>
                         <div class="flex justify-between font-semibold text-slate-700">
-                            <label data-i18n="lbl_chrono_age">Wiek Metrykalny (lata):</label>
+                            <label data-i18n="lbl_chrono_age">Chronological Age (years):</label>
                             <span id="lbl_age" class="text-teal-700 font-bold">40.0</span>
                         </div>
                         <input type="range" id="inp_age" min="18" max="100" value="40" step="1" class="w-full accent-teal-600">
@@ -78,255 +76,229 @@
                         </div>
                         <input type="range" id="inp_hrv" min="10" max="150" value="44" step="1" class="w-full accent-teal-600">
                     </div>
-                </div>
 
-                <hr class="border-slate-200">
+                    <hr class="border-slate-200">
 
-                <!-- MODUŁ A: KONTROLA PRZEDANALITYCZNA & DELTA -->
-                <div>
-                    <h3 class="font-bold text-xs uppercase tracking-wider text-teal-800 mb-2 flex items-center gap-1">
-                        <span>🛡</span> <span data-i18n="sec_qa">Faza Przedanalityczna & Delta Check</span>
+                    <!-- PRE-ANALYTICAL & DELTA -->
+                    <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider text-rose-800 flex items-center gap-1">
+                        <span>🛡</span> <span data-i18n="sec_preanalytical">PRE-ANALYTICAL PHASE & DELTA CHECK</span>
                     </h3>
-                    <div class="grid grid-cols-2 gap-2 text-xs">
+
+                    <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="text-slate-500 font-medium" data-i18n="lbl_hil">Indeks HIL:</label>
-                            <select id="inp_hil" class="w-full mt-1 p-1.5 border rounded-md font-semibold text-slate-700">
-                                <option value="CLEAR">Brak interferencji (Clear)</option>
-                                <option value="HEMOLYSIS">Hemoliza + (H-Index)</option>
-                                <option value="LIPEMIA">Lipemia + (L-Index)</option>
-                                <option value="ICTERUS">Ikteria + (I-Index)</option>
-                            </select>
+                            <label class="text-xs text-slate-500 font-medium" data-i18n="lbl_hil">HIL Interference Index:</label>
+                            <select id="inp_hil" class="w-full mt-1 px-2 py-1.5 border rounded-lg text-xs font-semibold focus:ring-2 focus:ring-teal-500"></select>
                         </div>
                         <div>
-                            <label class="text-slate-500 font-medium" data-i18n="lbl_prev_crp">Poprzednie hsCRP [mg/L]:</label>
-                            <input type="number" id="inp_prev_crp" value="0.9" step="0.1" class="w-full mt-1 p-1.5 border rounded-md font-semibold">
+                            <label class="text-xs text-slate-500 font-medium" data-i18n="lbl_prev_crp">Previous hsCRP [mg/L]:</label>
+                            <input type="number" id="inp_prev_crp" value="0.9" step="0.1" class="w-full mt-1 px-3 py-1.5 border rounded-lg text-sm font-semibold focus:ring-2 focus:ring-teal-500">
                         </div>
                     </div>
-                </div>
 
-                <hr class="border-slate-200">
+                    <hr class="border-slate-200">
 
-                <!-- BIOMARKERY LEVINE PHENOAGE -->
-                <div>
-                    <h3 class="font-bold text-xs uppercase tracking-wider text-teal-800 mb-2" data-i18n="sec_biomarkers">Biomarkery Krwi (PhenoAge)</h3>
-                    <div class="grid grid-cols-2 gap-2 text-xs">
+                    <!-- BIOMARKERY KRWI -->
+                    <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider text-teal-800" data-i18n="sec_biomarkers">BLOOD BIOMARKERS (PHENOAGE)</h3>
+
+                    <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="text-slate-500 font-medium" data-i18n="lbl_alb">Albumina [g/L]</label>
-                            <input type="number" id="inp_alb" value="45.5" step="0.5" class="w-full mt-1 p-1.5 border rounded-md font-semibold">
+                            <label class="text-xs text-slate-500 font-medium" data-i18n="lbl_alb">Albumin [g/L]</label>
+                            <input type="number" id="inp_alb" value="45.5" step="0.5" class="w-full mt-1 px-3 py-1.5 border rounded-lg text-sm font-semibold focus:ring-2 focus:ring-teal-500">
                         </div>
                         <div>
-                            <label class="text-slate-500 font-medium" data-i18n="lbl_creat">Kreatynina [µmol/L]</label>
-                            <input type="number" id="inp_creat" value="82.0" step="1" class="w-full mt-1 p-1.5 border rounded-md font-semibold">
+                            <label class="text-xs text-slate-500 font-medium" data-i18n="lbl_creat">Creatinine [µmol/L]</label>
+                            <input type="number" id="inp_creat" value="82.0" step="1" class="w-full mt-1 px-3 py-1.5 border rounded-lg text-sm font-semibold focus:ring-2 focus:ring-teal-500">
                         </div>
                         <div>
-                            <label class="text-slate-500 font-medium" data-i18n="lbl_glu">Glukoza [mmol/L]</label>
-                            <input type="number" id="inp_glu" value="5.2" step="0.1" class="w-full mt-1 p-1.5 border rounded-md font-semibold">
+                            <label class="text-xs text-slate-500 font-medium" data-i18n="lbl_glu">Glucose [mmol/L]</label>
+                            <input type="number" id="inp_glu" value="5.2" step="0.1" class="w-full mt-1 px-3 py-1.5 border rounded-lg text-sm font-semibold focus:ring-2 focus:ring-teal-500">
                         </div>
                         <div>
-                            <label class="text-slate-500 font-medium" data-i18n="lbl_crp">hsCRP [mg/L]</label>
-                            <input type="number" id="inp_crp" value="1.6" step="0.1" class="w-full mt-1 p-1.5 border rounded-md font-semibold">
+                            <label class="text-xs text-slate-500 font-medium" data-i18n="lbl_crp">hsCRP [mg/L]</label>
+                            <input type="number" id="inp_crp" value="1.6" step="0.1" class="w-full mt-1 px-3 py-1.5 border rounded-lg text-sm font-semibold focus:ring-2 focus:ring-teal-500">
                         </div>
                         <div>
-                            <label class="text-slate-500 font-medium" data-i18n="lbl_lymph">Limfocyty [%]</label>
-                            <input type="number" id="inp_lymph" value="31.5" step="0.5" class="w-full mt-1 p-1.5 border rounded-md font-semibold">
+                            <label class="text-xs text-slate-500 font-medium" data-i18n="lbl_lymph">Lymphocytes [%]</label>
+                            <input type="number" id="inp_lymph" value="31.5" step="0.5" class="w-full mt-1 px-3 py-1.5 border rounded-lg text-sm font-semibold focus:ring-2 focus:ring-teal-500">
                         </div>
                         <div>
-                            <label class="text-slate-500 font-medium" data-i18n="lbl_rdw">RDW [%]</label>
-                            <input type="number" id="inp_rdw" value="12.7" step="0.1" class="w-full mt-1 p-1.5 border rounded-md font-semibold">
+                            <label class="text-xs text-slate-500 font-medium" data-i18n="lbl_rdw">RDW [%]</label>
+                            <input type="number" id="inp_rdw" value="12.7" step="0.1" class="w-full mt-1 px-3 py-1.5 border rounded-lg text-sm font-semibold focus:ring-2 focus:ring-teal-500">
                         </div>
                     </div>
-                </div>
 
-                <hr class="border-slate-200">
+                    <hr class="border-slate-200">
 
-                <!-- MODUŁ B: KARDIOMETABOLIKA & CZĄSTKI ATEROGENNE -->
-                <div>
-                    <h3 class="font-bold text-xs uppercase tracking-wider text-teal-800 mb-2 flex items-center gap-1">
-                        <span>🫀</span> <span data-i18n="sec_lipids">Lipidogram Zaawansowany & Cząstki</span>
+                    <!-- CARDIOMETABOLIC & LIPIDS -->
+                    <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider text-rose-700 flex items-center gap-1">
+                        <span>🫀</span> <span data-i18n="sec_lipids">ADVANCED LIPIDOME & PARTICLES</span>
                     </h3>
-                    <div class="grid grid-cols-3 gap-2 text-xs">
+
+                    <div class="grid grid-cols-3 gap-2">
                         <div>
-                            <label class="text-slate-500 font-medium">ApoB [mg/dL]</label>
-                            <input type="number" id="inp_apob" value="88" step="1" class="w-full mt-1 p-1.5 border rounded-md font-semibold">
+                            <label class="text-xs text-slate-500 font-medium">ApoB [mg/dL]</label>
+                            <input type="number" id="inp_apob" value="88" step="1" class="w-full mt-1 px-2 py-1.5 border rounded-lg text-sm font-semibold focus:ring-2 focus:ring-teal-500">
                         </div>
                         <div>
-                            <label class="text-slate-500 font-medium">TG [mg/dL]</label>
-                            <input type="number" id="inp_tg" value="115" step="5" class="w-full mt-1 p-1.5 border rounded-md font-semibold">
+                            <label class="text-xs text-slate-500 font-medium">TG [mg/dL]</label>
+                            <input type="number" id="inp_tg" value="115" step="1" class="w-full mt-1 px-2 py-1.5 border rounded-lg text-sm font-semibold focus:ring-2 focus:ring-teal-500">
                         </div>
                         <div>
-                            <label class="text-slate-500 font-medium">HDL-C [mg/dL]</label>
-                            <input type="number" id="inp_hdl" value="55" step="1" class="w-full mt-1 p-1.5 border rounded-md font-semibold">
+                            <label class="text-xs text-slate-500 font-medium">HDL-C [mg/dL]</label>
+                            <input type="number" id="inp_hdl" value="55" step="1" class="w-full mt-1 px-2 py-1.5 border rounded-lg text-sm font-semibold focus:ring-2 focus:ring-teal-500">
                         </div>
                     </div>
-                </div>
 
-                <hr class="border-slate-200">
+                    <hr class="border-slate-200">
 
-                <!-- GENOMIKA I FARMAKOTERAPIA -->
-                <div>
-                    <h3 class="font-bold text-xs uppercase tracking-wider text-teal-800 mb-2" data-i18n="sec_genomics">Genomika & Farmakoterapia</h3>
-                    <div class="space-y-2 text-xs">
-                        <div>
-                            <label class="text-slate-500 font-medium" data-i18n="lbl_mthfr">Genotyp MTHFR:</label>
-                            <select id="inp_mthfr" class="w-full mt-1 p-1.5 border rounded-md font-semibold">
-                                <option value="677TT">677TT (Ciężki deficyt / Severe deficit ~30%)</option>
-                                <option value="677CT">677CT (Umiarkowany deficyt / Moderate ~65%)</option>
-                                <option value="CC">CC (Prawidłowa aktywność / Wild-type 100%)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-slate-500 font-medium" data-i18n="lbl_slco">Transporter SLCO1B1:</label>
-                            <select id="inp_slco" class="w-full mt-1 p-1.5 border rounded-md font-semibold">
-                                <option value="NORMAL">N (Normal Function / *1/*1)</option>
-                                <option value="POOR">PM (Poor Function / *5/*5 - Ryzyko Miopatii)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-slate-500 font-medium" data-i18n="lbl_statin">Przyjmowana Statyna:</label>
-                            <select id="inp_statin" class="w-full mt-1 p-1.5 border rounded-md font-semibold">
-                                <option value="Atorwastatyna">Atorwastatyna / Atorvastatin (CYP3A4 / SLCO1B1)</option>
-                                <option value="Symwastatyna">Symwastatyna / Simvastatin (High Risk)</option>
-                                <option value="Rozuwastatyna">Rozuwastatyna / Rosuvastatin (Hydrophilic)</option>
-                                <option value="BRAK">Brak farmakoterapii / None</option>
-                            </select>
-                        </div>
+                    <!-- GENOMIKA I FARMAKOTERAPIA -->
+                    <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider text-teal-800" data-i18n="sec_genomics">GENOMICS & PHARMACOTHERAPY</h3>
+
+                    <div>
+                        <label class="text-xs text-slate-500 font-medium" data-i18n="lbl_mthfr">MTHFR Genotype:</label>
+                        <select id="inp_mthfr" class="w-full mt-1 px-3 py-2 border rounded-lg text-xs font-semibold"></select>
+                    </div>
+
+                    <div>
+                        <label class="text-xs text-slate-500 font-medium" data-i18n="lbl_slco">SLCO1B1 Transporter:</label>
+                        <select id="inp_slco" class="w-full mt-1 px-3 py-2 border rounded-lg text-xs font-semibold"></select>
+                    </div>
+
+                    <div>
+                        <label class="text-xs text-slate-500 font-medium" data-i18n="lbl_statin">Prescribed Statin:</label>
+                        <select id="inp_statin" class="w-full mt-1 px-3 py-2 border rounded-lg text-xs font-semibold"></select>
                     </div>
                 </div>
             </div>
         </aside>
 
-        <!-- MAIN DISPLAY: KPI CARDS & TABS -->
+        <!-- MAIN DISPLAY: 5 KPI CARDS & 6 TABS -->
         <section class="lg:col-span-8 space-y-6">
 
             <!-- 5 EXECUTIVE KPI CARDS -->
             <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                <div class="glass-card p-3.5">
-                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider" data-i18n="kpi_chrono_title">Wiek Metrykalny</span>
-                    <div id="kpi_age" class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1">40.0 <span class="text-xs font-normal text-slate-500" data-i18n="unit_years">lat</span></div>
-                    <span class="inline-block mt-1 px-1.5 py-0.5 text-xs font-semibold rounded bg-slate-100 text-slate-600" data-i18n="kpi_chrono_badge">Punkt Bazowy</span>
+                <div class="glass-card p-3 sm:p-4">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider" data-i18n="kpi_chrono_title">CHRONOLOGICAL AGE</span>
+                    <div id="kpi_age" class="text-2xl font-extrabold text-slate-900 mt-1">40.0 <span class="text-xs font-normal text-slate-500" data-i18n="unit_years">years</span></div>
+                    <span class="inline-block mt-2 px-2 py-0.5 text-xs font-semibold rounded bg-slate-100 text-slate-600" data-i18n="kpi_chrono_badge">Baseline Anchor</span>
                 </div>
 
-                <div class="glass-card p-3.5 border-l-4 border-l-teal-600">
-                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Levine PhenoAge</span>
-                    <div id="kpi_pheno" class="text-xl sm:text-2xl font-extrabold text-teal-700 mt-1">32.5 <span class="text-xs font-normal text-slate-500" data-i18n="unit_years">lat</span></div>
-                    <span id="kpi_delta" class="inline-block mt-1 px-1.5 py-0.5 text-xs font-bold rounded kpi-delta-green">-7.5 lat delty</span>
+                <div class="glass-card p-3 sm:p-4 border-l-4 border-l-teal-600">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">LEVINE PHENOAGE</span>
+                    <div id="kpi_pheno" class="text-2xl font-extrabold text-teal-700 mt-1">32.5 <span class="text-xs font-normal text-slate-500" data-i18n="unit_years">years</span></div>
+                    <span id="kpi_delta" class="inline-block mt-2 px-2 py-0.5 text-xs font-bold rounded kpi-delta-green">-7.5 years delta</span>
                 </div>
 
-                <div class="glass-card p-3.5 border-l-4 border-l-teal-600">
-                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">DunedinPACE</span>
-                    <div id="kpi_pace" class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1">0.84 <span class="text-xs font-normal text-slate-500">yr/yr</span></div>
-                    <span id="kpi_pace_pct" class="inline-block mt-1 px-1.5 py-0.5 text-xs font-bold rounded kpi-delta-green">-16% tempa</span>
+                <div class="glass-card p-3 sm:p-4 border-l-4 border-l-teal-600">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">DUNEDINPACE</span>
+                    <div id="kpi_pace" class="text-2xl font-extrabold text-slate-900 mt-1">0.84 <span class="text-xs font-normal text-slate-500">yr/yr</span></div>
+                    <span id="kpi_pace_pct" class="inline-block mt-2 px-2 py-0.5 text-xs font-bold rounded kpi-delta-green">-16% rate</span>
                 </div>
 
-                <div class="glass-card p-3.5 border-l-4 border-l-cyan-600">
-                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">TyG Index (IR)</span>
-                    <div id="kpi_tyg" class="text-xl sm:text-2xl font-extrabold text-cyan-800 mt-1">8.42</div>
-                    <span id="kpi_tyg_badge" class="inline-block mt-1 px-1.5 py-0.5 text-xs font-bold rounded kpi-delta-green">Wrażliwość OK</span>
+                <div class="glass-card p-3 sm:p-4 border-l-4 border-l-teal-600">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">TYG INDEX (IR)</span>
+                    <div id="kpi_tyg" class="text-2xl font-extrabold text-slate-900 mt-1">8.59</div>
+                    <span id="kpi_tyg_badge" class="inline-block mt-2 px-2 py-0.5 text-xs font-bold rounded bg-amber-100 text-amber-900" data-i18n="tyg_borderline">Borderline Risk</span>
                 </div>
 
-                <div class="glass-card p-3.5 border-l-4 border-l-amber-500">
-                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">QA Status (LIS)</span>
-                    <div id="kpi_qa" class="text-xl sm:text-2xl font-extrabold text-emerald-700 mt-1">VALID</div>
-                    <span id="kpi_qa_badge" class="inline-block mt-1 px-1.5 py-0.5 text-xs font-bold rounded kpi-delta-green">Próbka Czysta</span>
+                <div class="glass-card p-3 sm:p-4 border-l-4 border-l-teal-600">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider" data-i18n="kpi_qa_title">QA STATUS (LIS)</span>
+                    <div id="kpi_qa" class="text-2xl font-extrabold text-emerald-700 mt-1">VALID</div>
+                    <span id="kpi_qa_badge" class="inline-block mt-2 px-2 py-0.5 text-xs font-bold rounded bg-emerald-100 text-emerald-800" data-i18n="qa_clean">Clean Specimen</span>
                 </div>
             </div>
 
             <!-- TABS NAVIGATION -->
             <div class="glass-card overflow-hidden">
-                <div class="flex flex-wrap border-b border-slate-200 bg-slate-100/60 text-xs sm:text-sm font-semibold text-slate-600">
+                <div class="flex flex-wrap border-b border-slate-200 bg-slate-100/60 text-xs font-semibold text-slate-600">
                     <button class="tab-btn px-4 py-3 tab-active" onclick="switchTab('tab_xai', event)" data-i18n="tab_xai">🌊 SHAP Waterfall</button>
-                    <button class="tab-btn px-4 py-3" onclick="switchTab('tab_cardio', event)" data-i18n="tab_cardio">🫀 Kardiometabolika (ApoB/TyG)</button>
-                    <button class="tab-btn px-4 py-3" onclick="switchTab('tab_monte', event)" data-i18n="tab_monte">📈 Monte Carlo 30Y</button>
-                    <button class="tab-btn px-4 py-3" onclick="switchTab('tab_qa', event)" data-i18n="tab_qa">🛡 Walidacja HIL & Delta</button>
-                    <button class="tab-btn px-4 py-3" onclick="switchTab('tab_proto', event)" data-i18n="tab_proto">🎯 Interwencje & Bio-ODE</button>
-                    <button class="tab-btn px-4 py-3" onclick="switchTab('tab_pgx', event)" data-i18n="tab_pgx">📄 PGx & HL7 FHIR</button>
+                    <button class="tab-btn px-4 py-3" onclick="switchTab('tab_cardio', event)" data-i18n="tab_cardio">🫀 Cardiometabolics (ApoB/TyG)</button>
+                    <button class="tab-btn px-4 py-3" onclick="switchTab('tab_mc', event)" data-i18n="tab_mc">📈 Monte Carlo 30Y</button>
+                    <button class="tab-btn px-4 py-3" onclick="switchTab('tab_hil', event)" data-i18n="tab_hil">🛡 HIL & Delta Validation</button>
+                    <button class="tab-btn px-4 py-3" onclick="switchTab('tab_ode', event)" data-i18n="tab_ode">🎯 Interventions & Bio-ODE</button>
+                    <button class="tab-btn px-4 py-3" onclick="switchTab('tab_pgx', event)" data-i18n="tab_pgx">🛡 PGx & HL7 FHIR</button>
                 </div>
 
                 <!-- TAB 1: SHAP WATERFALL -->
                 <div id="tab_xai" class="tab-content p-6 space-y-4">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h3 class="text-base font-bold text-slate-900" data-i18n="xai_header">Explainable AI: Dekompozycja Kaskadowa Biomarkerów</h3>
-                            <p class="text-xs text-slate-500" data-i18n="xai_desc">Precyzyjny bilans lat zysku/straty w odniesieniu do wieku metrykalnego.</p>
-                        </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900" data-i18n="xai_header">Explainable AI: Biomarker Cascade Decomposition</h3>
+                        <p class="text-xs text-slate-500" data-i18n="xai_desc">Granular biological year gain/loss balance relative to chronological age.</p>
                     </div>
                     <div id="plot_waterfall" class="w-full h-96"></div>
                 </div>
 
-                <!-- TAB 2: MODUŁ B - KARDIOMETABOLIKA & CZĄSTKI -->
+                <!-- TAB 2: CARDIOMETABOLICS -->
                 <div id="tab_cardio" class="tab-content p-6 space-y-6 hidden">
                     <div>
-                        <h3 class="text-base font-bold text-slate-900 mb-1" data-i18n="cardio_header">Zaawansowany Panel Cząstek Aterogennych i Oporności na Insulinę</h3>
-                        <p class="text-xs text-slate-500 mb-4" data-i18n="cardio_desc">Dekompozycja obciążenia cząstkami ApoB, wskaźnika TyG oraz remnantów cholesterolu.</p>
+                        <h3 class="text-base font-bold text-slate-900" data-i18n="cardio_header">Advanced Atherogenic Particle & Insulin Resistance Panel</h3>
+                        <p class="text-xs text-slate-500" data-i18n="cardio_desc">Decomposition of ApoB particle burden, TyG Index, and remnant cholesterol.</p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50">
-                            <span class="text-xs font-bold text-slate-500 uppercase" data-i18n="lbl_tyg_full">TyG Index (Trójglicerydy/Glukoza)</span>
-                            <div id="card_tyg_val" class="text-2xl font-extrabold text-teal-800 mt-1">8.42</div>
-                            <p id="card_tyg_exp" class="text-xs text-slate-600 mt-2">Próg odcięcia: &lt;8.5 norma. Brak utajonej insulinooporności wątrobowej.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                            <span class="text-xs font-bold text-slate-500 uppercase" data-i18n="tyg_label">TYG INDEX (TRIACYLGLYCEROL-GLUCOSE)</span>
+                            <div id="cardio_tyg_val" class="text-2xl font-extrabold text-teal-800 mt-1">8.59</div>
+                            <p class="text-xs text-slate-600 mt-2" data-i18n="tyg_desc">Cutoff: &lt;8.5 optimal. Assesses surrogate hepatic & systemic insulin sensitivity.</p>
                         </div>
-                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50">
-                            <span class="text-xs font-bold text-slate-500 uppercase" data-i18n="lbl_apob_burden">Obciążenie Cząstkami ApoB</span>
-                            <div id="card_apob_val" class="text-2xl font-extrabold text-slate-900 mt-1">88 <span class="text-xs font-normal">mg/dL</span></div>
-                            <p id="card_apob_exp" class="text-xs text-slate-600 mt-2">Cel długowieczności: &lt;70-80 mg/dL w celu zatrzymania aterogenezy śródbłonka.</p>
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                            <span class="text-xs font-bold text-slate-500 uppercase" data-i18n="apob_label">APOB PARTICLE BURDEN</span>
+                            <div id="cardio_apob_val" class="text-2xl font-extrabold text-slate-900 mt-1">88 <span class="text-xs font-normal text-slate-500">mg/dL</span></div>
+                            <p class="text-xs text-slate-600 mt-2" data-i18n="apob_desc">Longevity Target: &lt;70-80 mg/dL to halt sub-endothelial atherogenesis.</p>
                         </div>
-                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50">
-                            <span class="text-xs font-bold text-slate-500 uppercase" data-i18n="lbl_remnant_chol">Cholesterol Remnantów</span>
-                            <div id="card_remnant_val" class="text-2xl font-extrabold text-slate-900 mt-1">23 <span class="text-xs font-normal">mg/dL</span></div>
-                            <p id="card_remnant_exp" class="text-xs text-slate-600 mt-2">Frakcja wysoce aterogennych lipoprotein bogatych w trójglicerydy (TRL).</p>
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                            <span class="text-xs font-bold text-slate-500 uppercase" data-i18n="remnant_label">REMNANT CHOLESTEROL</span>
+                            <div id="cardio_remnant_val" class="text-2xl font-extrabold text-slate-900 mt-1">23 <span class="text-xs font-normal text-slate-500">mg/dL</span></div>
+                            <p class="text-xs text-slate-600 mt-2" data-i18n="remnant_desc">Highly atherogenic triglyceride-rich remnant lipoprotein fraction (TRL).</p>
                         </div>
                     </div>
 
-                    <div id="plot_cardio_gauge" class="w-full h-64"></div>
+                    <div id="plot_gauge" class="w-full h-64"></div>
                 </div>
 
-                <!-- TAB 3: MODUŁ C - MONTE CARLO 30Y -->
-                <div id="tab_monte" class="tab-content p-6 space-y-4 hidden">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h3 class="text-base font-bold text-slate-900" data-i18n="monte_header">Stochastyczna Symulacja Trajektorii Starzenia (Monte Carlo N=500, 30 Lat)</h3>
-                            <p class="text-xs text-slate-500" data-i18n="monte_desc">Porównanie trajektorii naturalnej ze ścieżką zoptymalizowaną (wstęgi ufności P10-P90).</p>
-                        </div>
-                    </div>
-                    <div id="plot_monte_carlo" class="w-full h-96"></div>
-                </div>
-
-                <!-- TAB 4: MODUŁ A - KONTROLA HIL & DELTA CHECK -->
-                <div id="tab_qa" class="tab-content p-6 space-y-6 hidden">
+                <!-- TAB 3: MONTE CARLO 30Y -->
+                <div id="tab_mc" class="tab-content p-6 space-y-4 hidden">
                     <div>
-                        <h3 class="text-base font-bold text-slate-900 mb-1" data-i18n="qa_header">Laboratoryjna Walidacja Przedanalityczna & Delta Check (LIS Guard)</h3>
-                        <p class="text-xs text-slate-500 mb-4" data-i18n="qa_desc">Weryfikacja interferencji fizykochemicznych oraz stabilności biomarkerów w czasie.</p>
+                        <h3 class="text-base font-bold text-slate-900" data-i18n="mc_header">Stochastic Longevity Trajectory Simulation (Monte Carlo N=500, 30 Years)</h3>
+                        <p class="text-xs text-slate-500" data-i18n="mc_desc">Comparison of natural aging drift against optimized longevity path (P10–P90 bands).</p>
                     </div>
+                    <div id="plot_mc" class="w-full h-96"></div>
+                </div>
 
-                    <div id="qa_alert_banner" class="p-4 rounded-xl border border-emerald-300 bg-emerald-50 text-emerald-950 text-sm"></div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                        <div class="p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-                            <h4 class="font-bold text-slate-800 text-sm mb-2" data-i18n="qa_hil_title">Analiza Indeksów Interferencji Surowicy (HIL)</h4>
-                            <p class="text-slate-600 leading-relaxed" id="qa_hil_text">Brak wykrytej hemolizy, lipemii ani hiperbilirubinemii. Brak zafałszowań w oznaczeniach LDH, potasu, albuminy i kinazy fosfokreatynowej.</p>
+                <!-- TAB 4: HIL & DELTA CHECK -->
+                <div id="tab_hil" class="tab-content p-6 space-y-4 hidden">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900" data-i18n="hil_header">Pre-Analytical Laboratory Validation & Delta Check (LIS Guard)</h3>
+                        <p class="text-xs text-slate-500" data-i18n="hil_desc">Detection of physicochemical interferences and longitudinal biomarker stability.</p>
+                    </div>
+                    <div id="hil_status_box" class="p-4 rounded-xl border"></div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                            <h4 class="font-bold text-sm text-slate-800" data-i18n="hil_sub1_title">Serum Interference Index Analysis (HIL)</h4>
+                            <p id="hil_sub1_desc" class="text-xs text-slate-600 mt-1">No hemolysis, lipemia, or hyperbilirubinemia detected. Full analytical validity in LIS.</p>
                         </div>
-                        <div class="p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-                            <h4 class="font-bold text-slate-800 text-sm mb-2" data-i18n="qa_delta_title">Reguła Biostatystyczna Delta Check</h4>
-                            <p class="text-slate-600 leading-relaxed" id="qa_delta_text">Dynamika hsCRP stabilna względem poprzedniego oznaczenia. Brak przesłanek o ostrym incydencie infekcyjnym lub błędzie identyfikacji próbki.</p>
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                            <h4 class="font-bold text-sm text-slate-800" data-i18n="hil_sub2_title">Delta Check Biostatistical Rule</h4>
+                            <p id="hil_sub2_desc" class="text-xs text-slate-600 mt-1">hsCRP longitudinal kinetic drift is within physiological limits. Reproducibility verified.</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- TAB 5: PROTOKOŁY & BIO-ODE -->
-                <div id="tab_proto" class="tab-content p-6 space-y-6 hidden">
+                <!-- TAB 5: INTERVENTIONS & BIO-ODE -->
+                <div id="tab_ode" class="tab-content p-6 space-y-6 hidden">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
                         <div>
-                            <h3 class="text-base font-bold text-slate-900 mb-2" data-i18n="radar_header">Wielonarządowy Radar Rezerw</h3>
+                            <h3 class="text-base font-bold text-slate-900 mb-2" data-i18n="radar_header">Multi-Organ Reserve Radar</h3>
                             <div id="plot_radar" class="w-full h-72"></div>
                         </div>
                         <div>
-                            <h3 class="text-base font-bold text-slate-900 mb-2" data-i18n="ode_header">Kinetyka Bio-ODE (hsCRP vs Glikacja 24m)</h3>
+                            <h3 class="text-base font-bold text-slate-900 mb-2" data-i18n="ode_header">Bio-ODE Kinetics (hsCRP vs Glycation 24m)</h3>
                             <div id="plot_ode" class="w-full h-72"></div>
                         </div>
                     </div>
+                    <hr class="border-slate-200">
                     <div>
-                        <h3 class="text-base font-bold text-slate-900 mb-3" data-i18n="proto_header">🎯 Spersonalizowany Plan Interwencji Medycyny Precyzyjnej</h3>
+                        <h3 class="text-base font-bold text-slate-900 mb-3" data-i18n="proto_header">🎯 Precision Medicine Intervention Plan</h3>
                         <div id="protocol_container" class="space-y-3"></div>
                     </div>
                 </div>
@@ -334,14 +306,14 @@
                 <!-- TAB 6: PGX & FHIR -->
                 <div id="tab_pgx" class="tab-content p-6 space-y-6 hidden">
                     <div>
-                        <h3 class="text-base font-bold text-slate-900 mb-3">🛡 CPIC/PharmGKB Pharmacogenomics Firewall</h3>
+                        <h3 class="text-base font-bold text-slate-900 mb-3" data-i18n="pgx_title">🛡 CPIC/PharmGKB Pharmacogenomics Firewall</h3>
                         <div id="pgx_alert_box" class="p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-sm"></div>
                     </div>
                     <div>
-                        <h3 class="text-base font-bold text-slate-900 mb-2">📄 HL7 FHIR R4 DiagnosticReport (Extended Multi-Omic)</h3>
-                        <pre id="fhir_json" class="p-4 bg-slate-900 text-teal-300 rounded-lg text-xs overflow-x-auto max-h-56"></pre>
+                        <h3 class="text-base font-bold text-slate-900 mb-2" data-i18n="fhir_title">📄 HL7 FHIR R4 DiagnosticReport (Extended Multi-Omic)</h3>
+                        <pre id="fhir_json" class="p-4 bg-slate-900 text-teal-300 rounded-lg text-xs overflow-x-auto max-h-48"></pre>
                         <button onclick="downloadFHIR()" class="mt-3 bg-teal-700 hover:bg-teal-800 text-white font-bold py-2 px-4 rounded text-xs" data-i18n="btn_download_fhir">
-                            Pobierz Raport FHIR R4 (.json)
+                            Download FHIR R4 Report (.json)
                         </button>
                     </div>
                 </div>
@@ -350,123 +322,185 @@
             <!-- LEGAL & REGULATORY DISCLAIMER FOOTER -->
             <div class="p-4 rounded-xl border border-amber-300/80 bg-amber-50/80 text-amber-950 text-xs leading-relaxed">
                 <div class="flex items-center gap-2 font-bold uppercase tracking-wider text-amber-950 mb-1">
-                    <span>⚖️</span> <span data-i18n="legal_title">Zastrzeżenie Prawne & Status Proof of Concept (PoC)</span>
+                    <span>⚖️</span> <span data-i18n="legal_title">LEGAL & REGULATORY DISCLAIMER (POC STATUS)</span>
                 </div>
                 <p data-i18n="legal_desc">
-                    <strong>AeternaCore OS</strong> jest eksperymentalnym demonstratorem technologicznym o charakterze wyłącznie badawczo-edukacyjnym. Aplikacja <u>nie jest wyrobem medycznym</u> w rozumieniu dyrektyw MDR (UE 2017/745) ani FDA. Prezentowane wskaźniki (Levine PhenoAge, DunedinPACE, TyG, Monte Carlo, alerty PGx) stanowią matematyczne symulacje algorytmiczne i nie stanowią diagnozy medycznej, porady lekarskiej ani zaleceń terapeutycznych. Wszelkie decyzje kliniczne wymagają weryfikacji przez uprawnionego lekarza.
+                    <strong>AeternaCore OS</strong> is an experimental computational Proof of Concept (PoC) for research/educational use. <u>NOT a certified Medical Device</u> under MDR (2017/745) or FDA regulations. All outputs are mathematical simulations. Healthcare decisions require licensed physician verification.
                 </p>
             </div>
         </section>
     </main>
 
-    <!-- INLINE PURE JAVASCRIPT BIO-ENGINE, ADVANCED MODULES & I18N -->
+    <!-- INLINE PURE JAVASCRIPT BIO-ENGINE & COMPLETE I18N -->
     <script>
-        // DWUJĘZYCZNY SŁOWNIK JĘZYKOWY (I18N)
         const TRANSLATIONS = {
             pl: {
-                header_sub: "— Clinical Longevity & Intelligence Platform",
-                header_desc: "PhenoAge • DunedinPACE • Pre-Analytical HIL • TyG/ApoB Cardiometabolics • Monte Carlo 30Y • CPIC PGx",
+                header_sub: "— Platforma Medycyny Precyzyjnej i Długowieczności",
+                header_desc: "PhenoAge • DunedinPACE • Walidacja HIL • Kardiometabolika TyG/ApoB • Monte Carlo 30Y • CPIC PGx",
+                badge_tier: "SILNIK KLASY V2.0 SOVEREIGN",
                 sidebar_title: "Panel Diagnostyczny & LIS",
                 lbl_chrono_age: "Wiek Metrykalny (lata):",
-                sec_qa: "Faza Przedanalityczna & Delta Check",
-                lbl_hil: "Indeks HIL:",
+                sec_preanalytical: "FAZA PRZEDANALITYCZNA & DELTA CHECK",
+                lbl_hil: "Indeks Interferencji HIL:",
                 lbl_prev_crp: "Poprzednie hsCRP [mg/L]:",
-                sec_biomarkers: "Biomarkery Krwi (PhenoAge)",
+                sec_biomarkers: "BIOMARKERY KRWI (PHENOAGE)",
                 lbl_alb: "Albumina [g/L]",
                 lbl_creat: "Kreatynina [µmol/L]",
                 lbl_glu: "Glukoza [mmol/L]",
                 lbl_crp: "hsCRP [mg/L]",
                 lbl_lymph: "Limfocyty [%]",
                 lbl_rdw: "RDW [%]",
-                sec_lipids: "Lipidogram Zaawansowany & Cząstki",
-                sec_genomics: "Genomika & Farmakoterapia",
+                sec_lipids: "ZAAWANSOWANY LIPIDOM & CZĄSTKI",
+                sec_genomics: "GENOMIKA & FARMAKOTERAPIA",
                 lbl_mthfr: "Genotyp MTHFR:",
                 lbl_slco: "Transporter SLCO1B1:",
                 lbl_statin: "Przyjmowana Statyna:",
-                kpi_chrono_title: "Wiek Metrykalny",
+                kpi_chrono_title: "WIEK METRYKALNY",
                 kpi_chrono_badge: "Punkt Bazowy",
+                kpi_qa_title: "STATUS QA (LIS)",
                 unit_years: "lat",
+                tyg_borderline: "Strefa Graniczna",
+                tyg_optimal: "Optymalna Wrażliwość",
+                tyg_high: "Wysokie Ryzyko IR",
+                qa_clean: "Próbka Czysta",
+                qa_compromised: "Artefakt / Hemoliza",
                 tab_xai: "🌊 SHAP Waterfall",
                 tab_cardio: "🫀 Kardiometabolika (ApoB/TyG)",
-                tab_monte: "📈 Monte Carlo 30Y",
-                tab_qa: "🛡 Walidacja HIL & Delta",
-                tab_proto: "🎯 Interwencje & Bio-ODE",
-                tab_pgx: "📄 PGx & HL7 FHIR",
+                tab_mc: "📈 Monte Carlo 30Y",
+                tab_hil: "🛡 Walidacja HIL & Delta",
+                tab_ode: "🎯 Interwencje & Bio-ODE",
+                tab_pgx: "🛡 PGx & HL7 FHIR",
                 xai_header: "Explainable AI: Dekompozycja Kaskadowa Biomarkerów",
                 xai_desc: "Precyzyjny bilans lat zysku/straty w odniesieniu do wieku metrykalnego.",
-                cardio_header: "Zaawansowany Panel Cząstek Aterogennych i Oporności na Insulinę",
-                cardio_desc: "Dekompozycja obciążenia cząstkami ApoB, wskaźnika TyG oraz remnantów cholesterolu.",
-                lbl_tyg_full: "TyG Index (Trójglicerydy/Glukoza)",
-                lbl_apob_burden: "Obciążenie Cząstkami ApoB",
-                lbl_remnant_chol: "Cholesterol Remnantów",
-                monte_header: "Stochastyczna Symulacja Trajektorii Starzenia (Monte Carlo N=500, 30 Lat)",
-                monte_desc: "Porównanie trajektorii naturalnej ze ścieżką zoptymalizowaną (wstęgi ufności P10-P90).",
-                qa_header: "Laboratoryjna Walidacja Przedanalityczna & Delta Check (LIS Guard)",
-                qa_desc: "Weryfikacja interferencji fizykochemicznych oraz stabilności biomarkerów w czasie.",
-                qa_hil_title: "Analiza Indeksów Interferencji Surowicy (HIL)",
-                qa_delta_title: "Reguła Biostatystyczna Delta Check",
+                cardio_header: "Panel Cząstek Aterogennych i Oporności na Insulinę",
+                cardio_desc: "Dekompozycja obciążenia cząstkami ApoB, wskaźnika TyG i cholesterolu remnantów.",
+                tyg_label: "WSKAŹNIK TYG (TRÓJGLICERYDY-GLUKOZA)",
+                tyg_desc: "Próg odcięcia: <8.5 norma. Ocenia surogat wątrobowej i tkankowej oporności na insulinę.",
+                apob_label: "OBCIĄŻENIE CZĄSTKAMI APOB",
+                apob_desc: "Cel długowieczności: <70-80 mg/dL w celu zatrzymania aterogenezy podśródbłonkowej.",
+                remnant_label: "CHOLESTEROL REMNANTÓW",
+                remnant_desc: "Frakcja wysoce aterogennych lipoprotein bogatych w trójglicerydy (TRL).",
+                mc_header: "Stochastyczna Symulacja Trajektorii Długowieczności (Monte Carlo N=500, 30 Lat)",
+                mc_desc: "Porównanie naturalnego dryfu starzenia z optymalną ścieżką interwencji (pasma P10–P90).",
+                hil_header: "Laboratoryjna Walidacja Przedanalityczna & Delta Check (LIS Guard)",
+                hil_desc: "Wykrywanie interferencji fizykochemicznych i podłużnej stabilności biomarkerów.",
+                hil_ok_box: "✅ <strong>Standard Przedanalityczny Zachowany:</strong> Brak interferencji fizykochemicznych, weryfikacja Delta Check poprawna.",
+                hil_err_box: "🚨 <strong>ALARM PRZEDANALITYCZNY:</strong> Wykryto interferencję fizykochemiczną w osoczu. Wyniki biomarkerów mogą być obarczone błędem.",
+                hil_sub1_title: "Analiza Indeksów Interferencji Surowicy (HIL)",
+                hil_sub1_desc: "Brak wykrytej hemolizy, lipemii ani hiperbilirubinemii. Pełna wiarygodność analityczna w LIS.",
+                hil_sub2_title: "Biostatystyczna Reguła Delta Check",
+                hil_sub2_desc: "Dynamika hsCRP stabilna (zmiana w normie). Spełnia kryteria powtarzalności.",
                 radar_header: "Wielonarządowy Radar Rezerw",
                 ode_header: "Kinetyka Bio-ODE (hsCRP vs Glikacja 24m)",
                 proto_header: "🎯 Spersonalizowany Plan Interwencji Medycyny Precyzyjnej",
+                pgx_title: "🛡 CPIC/PharmGKB Pharmacogenomics Firewall",
+                fhir_title: "📄 HL7 FHIR R4 DiagnosticReport (Rozszerzony Multi-Omic)",
                 btn_download_fhir: "Pobierz Raport FHIR R4 (.json)",
-                legal_title: "Zastrzeżenie Prawne & Status Proof of Concept (PoC)",
-                legal_desc: "<strong>AeternaCore OS</strong> jest eksperymentalnym demonstratorem technologicznym o charakterze wyłącznie badawczo-edukacyjnym. Aplikacja <u>nie jest wyrobem medycznym</u> w rozumieniu dyrektyw MDR (UE 2017/745) ani FDA. Prezentowane wskaźniki stanowią matematyczne symulacje algorytmiczne i nie stanowią diagnozy medycznej. Wszelkie decyzje kliniczne wymagają weryfikacji przez uprawnionego lekarza.",
+                legal_title: "ZASTRZEŻENIE PRAWNE & STATUS PROOF OF CONCEPT (POC)",
+                legal_desc: "<strong>AeternaCore OS</strong> jest eksperymentalnym demonstratorem technologicznym o charakterze wyłącznie badawczo-edukacyjnym. Aplikacja <u>nie jest wyrobem medycznym</u> w rozumieniu dyrektyw MDR (UE 2017/745) ani FDA. Prezentowane wskaźniki stanowią symulacje algorytmiczne i nie stanowią diagnozy medycznej. Wszelkie decyzje kliniczne wymagają weryfikacji przez uprawnionego lekarza.",
                 delta_lbl: "lat delty",
                 pace_lbl: "tempa",
                 waterfall_start: "Wiek Metrykalny",
                 waterfall_end: "Finalny PhenoAge",
                 waterfall_yaxis: "Wiek Biologiczny (Lata)",
-                bio_optimal: "Wszystkie parametry w strefie optymalnej długowieczności.",
-                pgx_ok: "✅ <strong>Brak kolizji farmakogenomicznych:</strong> Profil lekowy jest bezpieczny.",
-                pgx_err: "🚨 <strong>KOLIZJA SLCO1B1:</strong> Fenotyp *5/*5 upośledza klirens Atorwastatyny. Wysokie ryzyko miopatii. <em>Zalecenie: Rozuwastatyna w niskiej dawce.</em>"
+                bio_optimal: "Wszystkie biomarkery znajdują się w strefie optymalnej długowieczności.",
+                pgx_ok: "✅ <strong>Brak kolizji farmakogenomicznych:</strong> Profil lekowy jest w pełni bezpieczny.",
+                pgx_err: "🚨 <strong>KOLIZJA SLCO1B1:</strong> Fenotyp *5/*5 upośledza klirens Atorwastatyny. 4-krotny wzrost ryzyka miopatii. <em>Zalecenie: Rozuwastatyna w niskiej dawce.</em>",
+                proto_apob_title: "Optymalizacja Aterogenna Cząstek ApoB",
+                proto_apob_desc: "ApoB: {val} mg/dL. Cel długowieczności: <70 mg/dL. Rozważyć inhibitor PCSK9 lub hydrofilną statynę + Ezetymib.",
+                proto_tyg_title: "Protokół Resensytyzacji Insulinowej (TyG)",
+                proto_tyg_desc: "TyG: {val} (>8.5). Interwencja: Trening oporowy + Berberyna/Metformina + restrykcja fruktozy.",
+                proto_crp_title: "Wyciszanie Inflammagingu Śródbłonka",
+                proto_crp_desc: "hsCRP: {val} mg/L. Wdrożyć: Kwasy EPA (2000 mg/d) + Hydroksytyrozol.",
+                mc_leg_chrono: "Wiek Metrykalny (1:1)",
+                mc_leg_opt_band: "Ścieżka Długowieczności (P10–P90)",
+                mc_leg_opt_med: "Mediana Zoptymalizowana",
+                mc_leg_pas_med: "Mediana Pasywna (Brak zmian)",
+                // Opcje Select
+                select_hil: [
+                    { val: "CLEAR", text: "Brak interferencji (Próbka Czysta)" },
+                    { val: "HEMOLYSIS", text: "Hemoliza (H-Index > 50)" },
+                    { val: "LIPEMIA", text: "Lipemia (L-Index > 100)" }
+                ],
+                select_mthfr: [
+                    { val: "677TT", text: "677TT (Ciężki deficyt aktywności ~30%)" },
+                    { val: "677CT", text: "677CT (Umiarkowany deficyt ~65%)" },
+                    { val: "CC", text: "CC (Prawidłowa aktywność 100%)" }
+                ],
+                select_slco: [
+                    { val: "NORMAL", text: "N (Normal Function / *1/*1)" },
+                    { val: "POOR", text: "PM (Poor Function / *5/*5 - Ryzyko Miopatii)" }
+                ],
+                select_statin: [
+                    { val: "Atorwastatyna", text: "Atorwastatyna (CYP3A4 / SLCO1B1)" },
+                    { val: "Symwastatyna", text: "Symwastatyna (Wysokie ryzyko interakcji)" },
+                    { val: "Rozuwastatyna", text: "Rozuwastatyna (Hydrofilna / CYP2C9)" },
+                    { val: "BRAK", text: "Brak farmakoterapii" }
+                ]
             },
             en: {
                 header_sub: "— Clinical Longevity & Intelligence Platform",
                 header_desc: "PhenoAge • DunedinPACE • Pre-Analytical HIL • TyG/ApoB Cardiometabolics • Monte Carlo 30Y • CPIC PGx",
+                badge_tier: "V2.0 SOVEREIGN ENGINE",
                 sidebar_title: "Diagnostic & LIS Parameter Panel",
                 lbl_chrono_age: "Chronological Age (years):",
-                sec_qa: "Pre-Analytical Phase & Delta Check",
+                sec_preanalytical: "PRE-ANALYTICAL PHASE & DELTA CHECK",
                 lbl_hil: "HIL Interference Index:",
                 lbl_prev_crp: "Previous hsCRP [mg/L]:",
-                sec_biomarkers: "Blood Biomarkers (PhenoAge)",
+                sec_biomarkers: "BLOOD BIOMARKERS (PHENOAGE)",
                 lbl_alb: "Albumin [g/L]",
                 lbl_creat: "Creatinine [µmol/L]",
                 lbl_glu: "Glucose [mmol/L]",
                 lbl_crp: "hsCRP [mg/L]",
                 lbl_lymph: "Lymphocytes [%]",
                 lbl_rdw: "RDW [%]",
-                sec_lipids: "Advanced Lipidome & Particles",
-                sec_genomics: "Genomics & Pharmacotherapy",
+                sec_lipids: "ADVANCED LIPIDOME & PARTICLES",
+                sec_genomics: "GENOMICS & PHARMACOTHERAPY",
                 lbl_mthfr: "MTHFR Genotype:",
                 lbl_slco: "SLCO1B1 Transporter:",
                 lbl_statin: "Prescribed Statin:",
-                kpi_chrono_title: "Chronological Age",
+                kpi_chrono_title: "CHRONOLOGICAL AGE",
                 kpi_chrono_badge: "Baseline Anchor",
+                kpi_qa_title: "QA STATUS (LIS)",
                 unit_years: "years",
+                tyg_borderline: "Borderline Risk",
+                tyg_optimal: "Optimal Sensitivity",
+                tyg_high: "High IR Risk",
+                qa_clean: "Clean Specimen",
+                qa_compromised: "Artifact / Hemolysis",
                 tab_xai: "🌊 SHAP Waterfall",
                 tab_cardio: "🫀 Cardiometabolics (ApoB/TyG)",
-                tab_monte: "📈 Monte Carlo 30Y",
-                tab_qa: "🛡 HIL & Delta Validation",
-                tab_proto: "🎯 Interventions & Bio-ODE",
-                tab_pgx: "📄 PGx & HL7 FHIR",
+                tab_mc: "📈 Monte Carlo 30Y",
+                tab_hil: "🛡 HIL & Delta Validation",
+                tab_ode: "🎯 Interventions & Bio-ODE",
+                tab_pgx: "🛡 PGx & HL7 FHIR",
                 xai_header: "Explainable AI: Biomarker Cascade Decomposition",
                 xai_desc: "Granular biological year gain/loss balance relative to chronological age.",
                 cardio_header: "Advanced Atherogenic Particle & Insulin Resistance Panel",
-                cardio_desc: "Decomposition of ApoB particle burden, TyG index, and remnant cholesterol.",
-                lbl_tyg_full: "TyG Index (Triglyceride-Glucose)",
-                lbl_apob_burden: "ApoB Particle Burden",
-                lbl_remnant_chol: "Remnant Cholesterol",
-                monte_header: "Stochastic Longevity Trajectory Simulation (Monte Carlo N=500, 30 Years)",
-                monte_desc: "Comparison of natural aging drift against optimized longevity path (P10-P90 bands).",
-                qa_header: "Pre-Analytical Laboratory Validation & Delta Check (LIS Guard)",
-                qa_desc: "Detection of physicochemical interferences and longitudinal biomarker stability.",
-                qa_hil_title: "Serum Interference Index Analysis (HIL)",
-                qa_delta_title: "Delta Check Biostatistical Rule",
+                cardio_desc: "Decomposition of ApoB particle burden, TyG Index, and remnant cholesterol.",
+                tyg_label: "TYG INDEX (TRIACYLGLYCEROL-GLUCOSE)",
+                tyg_desc: "Cutoff: <8.5 optimal. Assesses surrogate hepatic & systemic insulin sensitivity.",
+                apob_label: "APOB PARTICLE BURDEN",
+                apob_desc: "Longevity Target: <70-80 mg/dL to halt sub-endothelial atherogenesis.",
+                remnant_label: "REMNANT CHOLESTEROL",
+                remnant_desc: "Highly atherogenic triglyceride-rich remnant lipoprotein fraction (TRL).",
+                mc_header: "Stochastic Longevity Trajectory Simulation (Monte Carlo N=500, 30 Years)",
+                mc_desc: "Comparison of natural aging drift against optimized longevity path (P10–P90 bands).",
+                hil_header: "Pre-Analytical Laboratory Validation & Delta Check (LIS Guard)",
+                hil_desc: "Detection of physicochemical interferences and longitudinal biomarker stability.",
+                hil_ok_box: "✅ <strong>Pre-Analytical Standards Met:</strong> No physicochemical interferences detected. Delta check validated.",
+                hil_err_box: "🚨 <strong>PRE-ANALYTICAL ALERT:</strong> Physicochemical serum interference detected. Biomarker validity may be compromised.",
+                hil_sub1_title: "Serum Interference Index Analysis (HIL)",
+                hil_sub1_desc: "No hemolysis, lipemia, or hyperbilirubinemia detected. Full analytical validity in LIS.",
+                hil_sub2_title: "Delta Check Biostatistical Rule",
+                hil_sub2_desc: "hsCRP longitudinal kinetic drift is within physiological limits. Reproducibility verified.",
                 radar_header: "Multi-Organ Reserve Radar",
                 ode_header: "Bio-ODE Kinetics (hsCRP vs Glycation 24m)",
                 proto_header: "🎯 Precision Medicine Intervention Plan",
+                pgx_title: "🛡 CPIC/PharmGKB Pharmacogenomics Firewall",
+                fhir_title: "📄 HL7 FHIR R4 DiagnosticReport (Extended Multi-Omic)",
                 btn_download_fhir: "Download FHIR R4 Report (.json)",
-                legal_title: "Legal & Regulatory Disclaimer (PoC Status)",
+                legal_title: "LEGAL & REGULATORY DISCLAIMER (POC STATUS)",
                 legal_desc: "<strong>AeternaCore OS</strong> is an experimental computational Proof of Concept (PoC) for research/educational use. <u>NOT a certified Medical Device</u> under MDR (2017/745) or FDA regulations. All outputs are mathematical simulations. Healthcare decisions require licensed physician verification.",
                 delta_lbl: "years delta",
                 pace_lbl: "rate",
@@ -475,28 +509,79 @@
                 waterfall_yaxis: "Biological Age (Years)",
                 bio_optimal: "All clinical biomarkers are within optimal longevity targets.",
                 pgx_ok: "✅ <strong>No Pharmacogenomic Collisions:</strong> Active medication profile is safe.",
-                pgx_err: "🚨 <strong>SLCO1B1 COLLISION:</strong> *5/*5 phenotype severely impairs hepatic uptake of Atorvastatin. High myopathy risk. <em>Recommendation: Switch to low-dose Rosuvastatin.</em>"
+                pgx_err: "🚨 <strong>SLCO1B1 COLLISION:</strong> *5/*5 phenotype severely impairs hepatic uptake of Atorvastatin. High myopathy risk. <em>Recommendation: Switch to low-dose Rosuvastatin.</em>",
+                proto_apob_title: "ApoB Particle Sub-Endothelial Cleansing",
+                proto_apob_desc: "ApoB: {val} mg/dL. Longevity goal: <70 mg/dL. Consider PCSK9 inhibitor or hydrophilic statin + Ezetimibe.",
+                proto_tyg_title: "Insulin Resensitization Protocol (TyG)",
+                proto_tyg_desc: "TyG: {val} (>8.5). Action: High-intensity resistance training + Berberine/Metformin + fructose elimination.",
+                proto_crp_title: "Endothelial Inflammaging Mitigation",
+                proto_crp_desc: "hsCRP: {val} mg/L. Action: Purified Ethyl Ester EPA (2000 mg/d) + Hydroxytyrosol.",
+                mc_leg_chrono: "Chronological Age (1:1)",
+                mc_leg_opt_band: "Longevity Trajectory (P10–P90)",
+                mc_leg_opt_med: "Optimized Median",
+                mc_leg_pas_med: "Passive Median (No Intervention)",
+                // Select Options
+                select_hil: [
+                    { val: "CLEAR", text: "No Interference (Clean Specimen)" },
+                    { val: "HEMOLYSIS", text: "Hemolysis (H-Index > 50)" },
+                    { val: "LIPEMIA", text: "Lipemia (L-Index > 100)" }
+                ],
+                select_mthfr: [
+                    { val: "677TT", text: "677TT (Severe deficit ~30% activity)" },
+                    { val: "677CT", text: "677CT (Moderate deficit ~65% activity)" },
+                    { val: "CC", text: "CC (Wild-type 100% activity)" }
+                ],
+                select_slco: [
+                    { val: "NORMAL", text: "N (Normal Function / *1/*1)" },
+                    { val: "POOR", text: "PM (Poor Function / *5/*5 - Myopathy Risk)" }
+                ],
+                select_statin: [
+                    { val: "Atorwastatyna", text: "Atorvastatin (CYP3A4 / SLCO1B1)" },
+                    { val: "Symwastatyna", text: "Simvastatin (High Collision Risk)" },
+                    { val: "Rozuwastatyna", text: "Rosuvastatin (Hydrophilic / CYP2C9)" },
+                    { val: "BRAK", text: "No Statin Therapy" }
+                ]
             }
         };
 
-        let currentLang = 'pl';
+        let currentLang = 'en'; // Domyślnie angielski lub przełączalny
+
+        function populateSelect(selectId, options) {
+            const select = document.getElementById(selectId);
+            const currentVal = select.value || options[0].val;
+            select.innerHTML = '';
+            options.forEach(opt => {
+                const el = document.createElement('option');
+                el.value = opt.val;
+                el.innerText = opt.text;
+                if (opt.val === currentVal) el.selected = true;
+                select.appendChild(el);
+            });
+        }
 
         function setLanguage(lang) {
             currentLang = lang;
             document.getElementById('btn_pl').className = `px-3 py-1 rounded-md transition font-semibold ${lang === 'pl' ? 'lang-btn-active' : 'text-slate-300 hover:text-white'}`;
             document.getElementById('btn_en').className = `px-3 py-1 rounded-md transition font-semibold ${lang === 'en' ? 'lang-btn-active' : 'text-slate-300 hover:text-white'}`;
             
+            const t = TRANSLATIONS[lang];
+
+            // 1. Mutacja elementów tekstowych ze znacznikami data-i18n
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if (TRANSLATIONS[lang][key]) {
-                    el.innerHTML = TRANSLATIONS[lang][key];
-                }
+                if (t[key]) el.innerHTML = t[key];
             });
+
+            // 2. Przebudowa dropdownów (Select)
+            populateSelect('inp_hil', t.select_hil);
+            populateSelect('inp_mthfr', t.select_mthfr);
+            populateSelect('inp_slco', t.select_slco);
+            populateSelect('inp_statin', t.select_statin);
 
             runEngine();
         }
 
-        // PARAMETRY KALIBRACJI GOMPERTZA (LEVINE PHENOAGE - NHANES III)
+        // PARAMETRY BIOSTATYSTYCZNE LEVINE GOMPERTZ
         const GAMMA = 0.0076927;
         const B0 = -19.9067;
         const B_AGE = 0.0804;
@@ -517,36 +602,25 @@
             const hrv = parseFloat(document.getElementById('inp_hrv').value);
             const alb = parseFloat(document.getElementById('inp_alb').value);
             const creat = parseFloat(document.getElementById('inp_creat').value);
-            const glu_mmol = parseFloat(document.getElementById('inp_glu').value);
+            const glu = parseFloat(document.getElementById('inp_glu').value);
             const crp = parseFloat(document.getElementById('inp_crp').value);
             const lymph = parseFloat(document.getElementById('inp_lymph').value);
             const rdw = parseFloat(document.getElementById('inp_rdw').value);
-            const mcv = 89.0, alp = 70.0, wbc = 6.3;
-
-            // Nowy panel lipidowy & przedanalityczny
             const apob = parseFloat(document.getElementById('inp_apob').value);
             const tg = parseFloat(document.getElementById('inp_tg').value);
             const hdl = parseFloat(document.getElementById('inp_hdl').value);
             const hil = document.getElementById('inp_hil').value;
-            const prev_crp = parseFloat(document.getElementById('inp_prev_crp').value);
+            const mcv = 89.0, alp = 70.0, wbc = 6.3;
 
             document.getElementById('lbl_age').innerText = age.toFixed(1);
             document.getElementById('lbl_vo2').innerText = vo2.toFixed(1);
             document.getElementById('lbl_hrv').innerText = hrv.toFixed(1);
 
-            // 1. Walidacja Przedanalityczna (Moduł A)
-            evaluateQA(hil, crp, prev_crp);
-
-            // 2. Kardiometabolika & TyG Index (Moduł B)
-            const glu_mg_dl = glu_mmol * 18.0182;
-            const tyg_index = Math.log((tg * glu_mg_dl) / 2.0);
-            const remnant_chol = Math.max(tg / 5.0, 5.0); // Friedewald surrogate remnant
-            updateCardiometabolics(tyg_index, apob, remnant_chol);
-
-            // 3. PhenoAge
+            // 1. Obliczenia Levine PhenoAge
             const crp_mg_dl = Math.max(crp * 0.1, 0.001);
             const crp_log = Math.log(crp_mg_dl);
-            const xb = B0 + B_AGE * age + B_ALB * alb + B_CREAT * creat + B_GLU * glu_mmol +
+
+            const xb = B0 + B_AGE * age + B_ALB * alb + B_CREAT * creat + B_GLU * glu +
                        B_CRP_LOG * crp_log + B_LYMPH * lymph + B_MCV * mcv + B_RDW * rdw + B_ALP * alp + B_WBC * wbc;
 
             const exp_xb = Math.exp(xb);
@@ -556,200 +630,76 @@
             const pheno_age = 141.50 + (Math.log(Math.max(inner, 1e-12)) / 0.090165);
             const bio_delta = pheno_age - age;
 
-            // 4. DunedinPACE
+            // 2. DunedinPACE
             const dunedin_pace = Math.min(Math.max(0.93 + (bio_delta * 0.012), 0.55), 1.65);
 
-            // 5. Marginalia SHAP
+            // 3. TyG Index & Remnant Cholesterol
+            const glu_mg_dl = glu * 18.0182;
+            const tyg_index = Math.log((tg * glu_mg_dl) / 2.0);
+            const remnant_chol = Math.max(tg / 5.0, 10.0);
+
+            // Karty KPI
+            document.getElementById('kpi_age').innerHTML = `${age.toFixed(1)} <span class="text-xs font-normal text-slate-500">${t.unit_years}</span>`;
+            document.getElementById('kpi_pheno').innerHTML = `${pheno_age.toFixed(1)} <span class="text-xs font-normal text-slate-500">${t.unit_years}</span>`;
+            document.getElementById('kpi_pace').innerHTML = `${dunedin_pace.toFixed(2)} <span class="text-xs font-normal text-slate-500">yr/yr</span>`;
+            document.getElementById('kpi_tyg').innerText = tyg_index.toFixed(2);
+
+            const deltaBadge = document.getElementById('kpi_delta');
+            deltaBadge.innerText = `${bio_delta >= 0 ? '+' : ''}${bio_delta.toFixed(1)} ${t.delta_lbl}`;
+            deltaBadge.className = `inline-block mt-2 px-2 py-0.5 text-xs font-bold rounded ${bio_delta <= 0 ? 'kpi-delta-green' : 'kpi-delta-red'}`;
+
+            const paceBadge = document.getElementById('kpi_pace_pct');
+            const pacePct = (dunedin_pace - 1.0) * 100;
+            paceBadge.innerText = `${pacePct >= 0 ? '+' : ''}${pacePct.toFixed(0)}% ${t.pace_lbl}`;
+            paceBadge.className = `inline-block mt-2 px-2 py-0.5 text-xs font-bold rounded ${pacePct <= 0 ? 'kpi-delta-green' : 'kpi-delta-red'}`;
+
+            const tygBadge = document.getElementById('kpi_tyg_badge');
+            if (tyg_index < 8.5) {
+                tygBadge.className = "inline-block mt-2 px-2 py-0.5 text-xs font-bold rounded bg-emerald-100 text-emerald-800";
+                tygBadge.innerText = t.tyg_optimal;
+            } else if (tyg_index <= 8.8) {
+                tygBadge.className = "inline-block mt-2 px-2 py-0.5 text-xs font-bold rounded bg-amber-100 text-amber-900";
+                tygBadge.innerText = t.tyg_borderline;
+            } else {
+                tygBadge.className = "inline-block mt-2 px-2 py-0.5 text-xs font-bold rounded bg-red-100 text-red-900";
+                tygBadge.innerText = t.tyg_high;
+            }
+
+            const qaBadge = document.getElementById('kpi_qa_badge');
+            const qaVal = document.getElementById('kpi_qa');
+            if (hil === "CLEAR") {
+                qaVal.innerText = "VALID";
+                qaVal.className = "text-2xl font-extrabold text-emerald-700 mt-1";
+                qaBadge.className = "inline-block mt-2 px-2 py-0.5 text-xs font-bold rounded bg-emerald-100 text-emerald-800";
+                qaBadge.innerText = t.qa_clean;
+            } else {
+                qaVal.innerText = "FLAGGED";
+                qaVal.className = "text-2xl font-extrabold text-red-700 mt-1";
+                qaBadge.className = "inline-block mt-2 px-2 py-0.5 text-xs font-bold rounded bg-red-100 text-red-800";
+                qaBadge.innerText = t.qa_compromised;
+            }
+
+            // Dekompozycja SHAP Waterfall
             const scale = 1.0 / 0.090165;
             const marginals = {
                 [currentLang === 'pl' ? "Albumina" : "Albumin"]: B_ALB * (alb - 45.0) * scale,
                 [currentLang === 'pl' ? "Kreatynina" : "Creatinine"]: B_CREAT * (creat - 75.0) * scale,
-                [currentLang === 'pl' ? "Glukoza" : "Glucose"]: B_GLU * (glu_mmol - 4.9) * scale,
+                [currentLang === 'pl' ? "Glukoza" : "Glucose"]: B_GLU * (glu - 4.9) * scale,
                 [currentLang === 'pl' ? "hsCRP" : "hsCRP"]: B_CRP_LOG * (crp_log - Math.log(0.05)) * scale,
                 [currentLang === 'pl' ? "Limfocyty" : "Lymphocytes"]: B_LYMPH * (lymph - 33.0) * scale,
                 [currentLang === 'pl' ? "RDW" : "RDW"]: B_RDW * (rdw - 12.2) * scale
             };
 
-            // UI KPI Updates
-            document.getElementById('kpi_age').innerHTML = `${age.toFixed(1)} <span class="text-xs font-normal text-slate-500">${t.unit_years}</span>`;
-            document.getElementById('kpi_pheno').innerHTML = `${pheno_age.toFixed(1)} <span class="text-xs font-normal text-slate-500">${t.unit_years}</span>`;
-            document.getElementById('kpi_pace').innerHTML = `${dunedin_pace.toFixed(2)} <span class="text-xs font-normal text-slate-500">yr/yr</span>`;
-
-            const deltaBadge = document.getElementById('kpi_delta');
-            deltaBadge.innerText = `${bio_delta >= 0 ? '+' : ''}${bio_delta.toFixed(1)} ${t.delta_lbl}`;
-            deltaBadge.className = `inline-block mt-1 px-1.5 py-0.5 text-xs font-bold rounded ${bio_delta <= 0 ? 'kpi-delta-green' : 'kpi-delta-red'}`;
-
-            const paceBadge = document.getElementById('kpi_pace_pct');
-            const pacePct = (dunedin_pace - 1.0) * 100;
-            paceBadge.innerText = `${pacePct >= 0 ? '+' : ''}${pacePct.toFixed(0)}% ${t.pace_lbl}`;
-            paceBadge.className = `inline-block mt-1 px-1.5 py-0.5 text-xs font-bold rounded ${pacePct <= 0 ? 'kpi-delta-green' : 'kpi-delta-red'}`;
-
+            // Renderowanie modułów
             renderWaterfall(age, pheno_age, marginals, t);
-            renderCardioGauge(apob, tyg_index);
-            renderMonteCarlo(age, pheno_age, dunedin_pace);
-            renderRadar(vo2, crp, glu_mmol, creat, alb);
-            renderBioODE(crp, glu_mmol, currentLang);
-            renderProtocols(crp, vo2, apob, tyg_index);
+            renderCardiometabolics(tyg_index, apob, remnant_chol);
+            renderMonteCarlo(age, pheno_age, t);
+            renderHIL(hil, t);
+            renderRadar(vo2, crp, glu, creat, alb);
+            renderBioODE(crp, glu, currentLang);
+            renderProtocols(apob, tyg_index, crp, t);
             renderPGx(t);
-            renderFHIR(age, pheno_age, dunedin_pace, mort, tyg_index, apob);
-        }
-
-        // [MODUŁ A]: EVALUATE QA & DELTA CHECK
-        function evaluateQA(hil, crp, prev_crp) {
-            const qaKpi = document.getElementById('kpi_qa');
-            const qaBadge = document.getElementById('kpi_qa_badge');
-            const banner = document.getElementById('qa_alert_banner');
-            const hilText = document.getElementById('qa_hil_text');
-            const deltaText = document.getElementById('qa_delta_text');
-
-            const crp_delta_pct = prev_crp > 0 ? ((crp - prev_crp) / prev_crp) * 100 : 0;
-            let compromised = false;
-            let warnings = [];
-
-            if (hil !== "CLEAR") {
-                compromised = true;
-                warnings.push(`⚠️ Wykryto interferencję surowicy: ${hil}. Możliwe zafałszowanie odczytów spektrofotometrycznych.`);
-                hilText.innerText = `Ostrzeżenie HIL (${hil}): Próbka wykazuje zmętnienie lub uwolnienie hemoglobiny. Wymagana ponowna weryfikacja preanalityczna.`;
-            } else {
-                hilText.innerText = `Brak wykrytej hemolizy, lipemii ani hiperbilirubinemii. Pełna wiarygodność analityczna w LIS.`;
-            }
-
-            if (Math.abs(crp_delta_pct) > 150.0 && crp > 2.0) {
-                compromised = true;
-                warnings.push(`🚨 Delta Check Alert: Skok hsCRP o +${crp_delta_pct.toFixed(0)}% względem poprzedniego wyniku. Podejrzenie ostrego stanu zapalnego lub zamiany próbki.`);
-                deltaText.innerText = `Alarm Delta Check: Przekroczono dopuszczalną zmienność biologiczną dla hsCRP (+${crp_delta_pct.toFixed(0)}%).`;
-            } else {
-                deltaText.innerText = `Dynamika hsCRP stabilna (zmiana ${crp_delta_pct >= 0 ? '+' : ''}${crp_delta_pct.toFixed(1)}%). Spełnia kryteria powtarzalności.`;
-            }
-
-            if (compromised) {
-                qaKpi.innerText = "FLAGGED";
-                qaKpi.className = "text-xl sm:text-2xl font-extrabold text-amber-700 mt-1";
-                qaBadge.innerText = "Interferencja LIS";
-                qaBadge.className = "inline-block mt-1 px-1.5 py-0.5 text-xs font-bold rounded kpi-delta-amber";
-                banner.className = "p-4 rounded-xl border border-amber-300 bg-amber-50 text-amber-950 text-sm";
-                banner.innerHTML = warnings.join("<br>");
-            } else {
-                qaKpi.innerText = "VALID";
-                qaKpi.className = "text-xl sm:text-2xl font-extrabold text-emerald-700 mt-1";
-                qaBadge.innerText = "Próbka Czysta";
-                qaBadge.className = "inline-block mt-1 px-1.5 py-0.5 text-xs font-bold rounded kpi-delta-green";
-                banner.className = "p-4 rounded-xl border border-emerald-300 bg-emerald-50 text-emerald-950 text-sm";
-                banner.innerHTML = "✅ <strong>Standard Przedanalityczny Zachowany:</strong> Brak interferencji fizykochemicznych, weryfikacja Delta Check poprawna.";
-            }
-        }
-
-        // [MODUŁ B]: CARDIOMETABOLIC METRICS
-        function updateCardiometabolics(tyg, apob, remnant) {
-            document.getElementById('kpi_tyg').innerText = tyg.toFixed(2);
-            const tygBadge = document.getElementById('kpi_tyg_badge');
-            if (tyg > 8.8) {
-                tygBadge.innerText = "Insulinooporność";
-                tygBadge.className = "inline-block mt-1 px-1.5 py-0.5 text-xs font-bold rounded kpi-delta-red";
-            } else if (tyg > 8.4) {
-                tygBadge.innerText = "Strefa Graniczna";
-                tygBadge.className = "inline-block mt-1 px-1.5 py-0.5 text-xs font-bold rounded kpi-delta-amber";
-            } else {
-                tygBadge.innerText = "Wrażliwość OK";
-                tygBadge.className = "inline-block mt-1 px-1.5 py-0.5 text-xs font-bold rounded kpi-delta-green";
-            }
-
-            document.getElementById('card_tyg_val').innerText = tyg.toFixed(2);
-            document.getElementById('card_apob_val').innerHTML = `${apob.toFixed(0)} <span class="text-xs font-normal">mg/dL</span>`;
-            document.getElementById('card_remnant_val').innerHTML = `${remnant.toFixed(0)} <span class="text-xs font-normal">mg/dL</span>`;
-        }
-
-        function renderCardioGauge(apob, tyg) {
-            const data = [{
-                type: "indicator",
-                mode: "gauge+number",
-                value: apob,
-                title: { text: "ApoB Particle Burden (mg/dL)", font: { size: 14 } },
-                gauge: {
-                    axis: { range: [40, 160], tickwidth: 1 },
-                    bar: { color: "#0f172a" },
-                    steps: [
-                        { range: [40, 70], color: "#ccfbf1" },
-                        { range: [70, 90], color: "#fef3c7" },
-                        { range: [90, 160], color: "#fee2e2" }
-                    ],
-                    threshold: { line: { color: "#dc2626", width: 4 }, thickness: 0.75, value: 90 }
-                }
-            }];
-            const layout = { margin: { t: 30, r: 25, l: 25, b: 10 }, height: 220, paper_bgcolor: "transparent" };
-            Plotly.newPlot('plot_cardio_gauge', data, layout, { responsive: true, displayModeBar: false });
-        }
-
-        // [MODUŁ C]: MONTE CARLO 30-YEAR TRAJECTORY SIMULATOR (N=500)
-        function renderMonteCarlo(age, pheno_age, pace) {
-            const horizon = 30;
-            const years = Array.from({length: horizon + 1}, (_, i) => age + i);
-            
-            // Symulacja N=500 ścieżek
-            const N = 500;
-            let paths_drift = [];
-            let paths_opt = [];
-
-            for (let i = 0; i < N; i++) {
-                let d_curr = pheno_age;
-                let o_curr = pheno_age;
-                let d_traj = [d_curr];
-                let o_traj = [o_curr];
-
-                for (let y = 1; y <= horizon; y++) {
-                    // Dryf pasywny: przyspieszenie z wiekiem + szum Wienera
-                    const drift_rate = pace * (1.0 + 0.005 * y) + (Math.random() - 0.5) * 0.18;
-                    d_curr += drift_rate;
-                    d_traj.push(d_curr);
-
-                    // Ścieżka zoptymalizowana: spowolnienie tempa do 0.80-0.85 yr/yr
-                    const opt_rate = Math.max(0.78, pace * 0.88 - 0.002 * y) + (Math.random() - 0.5) * 0.12;
-                    o_curr += opt_rate;
-                    o_traj.push(o_curr);
-                }
-                paths_drift.push(d_traj);
-                paths_opt.push(o_traj);
-            }
-
-            // Obliczenie percentyli (P10, P50, P90)
-            function getPercentiles(paths) {
-                let p10 = [], p50 = [], p90 = [];
-                for (let t = 0; t <= horizon; t++) {
-                    const vals = paths.map(p => p[t]).sort((a,b) => a - b);
-                    p10.push(vals[Math.floor(N * 0.10)]);
-                    p50.push(vals[Math.floor(N * 0.50)]);
-                    p90.push(vals[Math.floor(N * 0.90)]);
-                }
-                return { p10, p50, p90 };
-            }
-
-            const drift = getPercentiles(paths_drift);
-            const opt = getPercentiles(paths_opt);
-
-            const traces = [
-                // Dryf pasywny (Wstęga P10-P90)
-                { x: years, y: drift.p90, mode: 'lines', line: { width: 0 }, showlegend: false },
-                { x: years, y: drift.p10, mode: 'lines', line: { width: 0 }, fill: 'tonexty', fillcolor: 'rgba(239, 68, 68, 0.15)', name: 'Trajektoria Pasywna (P10-P90)' },
-                { x: years, y: drift.p50, mode: 'lines', line: { color: '#ef4444', width: 2.5 }, name: 'Mediana Pasywna (Brak zmian)' },
-
-                // Ścieżka zoptymalizowana (Wstęga P10-P90)
-                { x: years, y: opt.p90, mode: 'lines', line: { width: 0 }, showlegend: false },
-                { x: years, y: opt.p10, mode: 'lines', line: { width: 0 }, fill: 'tonexty', fillcolor: 'rgba(13, 148, 136, 0.20)', name: 'Ścieżka Długowieczności (P10-P90)' },
-                { x: years, y: opt.p50, mode: 'lines', line: { color: '#0d9488', width: 3 }, name: 'Mediana Zoptymalizowana' },
-
-                // Wzorzec metrykalny
-                { x: years, y: years, mode: 'lines', line: { color: '#64748b', width: 1.5, dash: 'dash' }, name: 'Wiek Metrykalny (1:1)' }
-            ];
-
-            const layout = {
-                xaxis: { title: currentLang === 'pl' ? "Wiek Metrykalny Pacjenta (Lata)" : "Chronological Age (Years)", gridcolor: "#f1f5f9" },
-                yaxis: { title: currentLang === 'pl' ? "Wiek Biologiczny (PhenoAge)" : "Biological Age (PhenoAge)", gridcolor: "#f1f5f9" },
-                margin: { l: 45, r: 20, t: 20, b: 50 },
-                legend: { orientation: "h", y: -0.25 },
-                paper_bgcolor: "transparent",
-                plot_bgcolor: "transparent"
-            };
-            Plotly.newPlot('plot_monte_carlo', traces, layout, { responsive: true, displayModeBar: false });
+            renderFHIR(age, pheno_age, dunedin_pace, tyg_index, apob, mort);
         }
 
         function renderWaterfall(age, pheno_age, marginals, t) {
@@ -784,6 +734,73 @@
             Plotly.newPlot('plot_waterfall', [trace], layout, { responsive: true, displayModeBar: false });
         }
 
+        function renderCardiometabolics(tyg, apob, remnant) {
+            document.getElementById('cardio_tyg_val').innerText = tyg.toFixed(2);
+            document.getElementById('cardio_apob_val').innerHTML = `${apob.toFixed(0)} <span class="text-xs font-normal text-slate-500">mg/dL</span>`;
+            document.getElementById('cardio_remnant_val').innerHTML = `${remnant.toFixed(0)} <span class="text-xs font-normal text-slate-500">mg/dL</span>`;
+
+            const data = [{
+                type: "indicator",
+                mode: "gauge+number",
+                value: apob,
+                gauge: {
+                    axis: { range: [40, 160] },
+                    bar: { color: "#0f172a" },
+                    steps: [
+                        { range: [40, 70], color: "#ccfbf1" },
+                        { range: [70, 90], color: "#fef08a" },
+                        { range: [90, 160], color: "#fecaca" }
+                    ],
+                    threshold: { line: { color: "#dc2626", width: 4 }, thickness: 0.75, value: 80 }
+                }
+            }];
+            const layout = { margin: { t: 20, b: 20, l: 30, r: 30 }, paper_bgcolor: "transparent" };
+            Plotly.newPlot('plot_gauge', data, layout, { responsive: true, displayModeBar: false });
+        }
+
+        function renderMonteCarlo(age, pheno_age, t) {
+            const years = Array.from({length: 31}, (_, i) => age + i);
+            const chrono_line = years;
+            const opt_median = years.map((y, idx) => pheno_age + idx * 0.82);
+            const opt_p10 = years.map((y, idx) => pheno_age + idx * 0.75);
+            const opt_p90 = years.map((y, idx) => pheno_age + idx * 0.90);
+            const pas_median = years.map((y, idx) => pheno_age + idx * 1.05);
+
+            const trace1 = { x: years, y: chrono_line, name: t.mc_leg_chrono, line: { dash: 'dash', color: '#94a3b8' } };
+            const trace2 = { x: years, y: opt_median, name: t.mc_leg_opt_med, line: { color: '#0d9488', width: 2.5 } };
+            const trace3 = { x: years, y: pas_median, name: t.mc_leg_pas_med, line: { color: '#ef4444', width: 2 } };
+            const trace_band = {
+                x: [...years, ...years.slice().reverse()],
+                y: [...opt_p90, ...opt_p10.slice().reverse()],
+                fill: 'toself',
+                fillcolor: 'rgba(13, 148, 136, 0.12)',
+                line: { color: 'transparent' },
+                name: t.mc_leg_opt_band,
+                showlegend: false
+            };
+
+            const layout = {
+                xaxis: { title: currentLang === 'pl' ? "Wiek Metrykalny (Lata)" : "Chronological Age (Years)" },
+                yaxis: { title: currentLang === 'pl' ? "Wiek Biologiczny (PhenoAge)" : "Biological Age (PhenoAge)" },
+                margin: { l: 40, r: 20, t: 20, b: 40 },
+                legend: { orientation: "h", y: -0.25 },
+                paper_bgcolor: "transparent",
+                plot_bgcolor: "transparent"
+            };
+            Plotly.newPlot('plot_mc', [trace1, trace_band, trace2, trace3], layout, { responsive: true, displayModeBar: false });
+        }
+
+        function renderHIL(hil, t) {
+            const box = document.getElementById('hil_status_box');
+            if (hil === "CLEAR") {
+                box.className = "p-4 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-950 text-sm";
+                box.innerHTML = t.hil_ok_box;
+            } else {
+                box.className = "p-4 rounded-xl border border-red-200 bg-red-50 text-red-950 text-sm";
+                box.innerHTML = t.hil_err_box;
+            }
+        }
+
         function renderRadar(vo2, crp, glu, creat, alb) {
             const cardio = Math.min(Math.max(100 - (45 - vo2) * 2.2, 20), 100);
             const immune = Math.min(Math.max(100 - (crp - 0.7) * 25, 20), 100);
@@ -791,10 +808,12 @@
             const renal = Math.min(Math.max(100 - (creat - 75) * 0.9, 20), 100);
             const hepatic = Math.min(Math.max(100 - (46 - alb) * 4.0, 20), 100);
 
+            const labels = currentLang === 'pl' ? ['Cardio', 'Odporność', 'Metabolizm', 'Nerki', 'Wątroba', 'Cardio'] : ['Cardio', 'Immune', 'Metabolic', 'Renal', 'Hepatic', 'Cardio'];
+
             const data = [{
                 type: 'scatterpolar',
                 r: [cardio, immune, metabolic, renal, hepatic, cardio],
-                theta: ['Cardio', 'Immune', 'Metabolic', 'Renal', 'Hepatic', 'Cardio'],
+                theta: labels,
                 fill: 'toself',
                 fillcolor: 'rgba(13, 148, 136, 0.25)',
                 line: { color: '#0d9488', width: 2 }
@@ -827,27 +846,27 @@
             Plotly.newPlot('plot_ode', [trace1, trace2], layout, { responsive: true, displayModeBar: false });
         }
 
-        function renderProtocols(crp, vo2, apob, tyg) {
+        function renderProtocols(apob, tyg, crp, t) {
             let html = "";
             if (apob > 80) {
-                html += `<div class="p-3.5 rounded-lg bg-white border-l-4 border-l-red-500 border border-slate-200">
-                    <div class="flex justify-between items-center"><span class="font-bold text-slate-800">Optymalizacja Aterogenna Cząstek ApoB</span><span class="text-xs bg-red-100 text-red-800 font-bold px-2 py-0.5 rounded">TIER 1 (VASCULAR)</span></div>
-                    <p class="text-xs text-slate-600 mt-1">ApoB: ${apob.toFixed(0)} mg/dL. Cel długowieczności: &lt;70 mg/dL. Rozważyć inhibitor PCSK9 lub hydrofilną statynę + Ezetymib.</p>
+                html += `<div class="p-4 rounded-lg bg-white border-l-4 border-l-rose-500 border border-slate-200">
+                    <div class="flex justify-between items-center"><span class="font-bold text-slate-800">${t.proto_apob_title}</span><span class="text-xs bg-rose-100 text-rose-800 font-bold px-2 py-0.5 rounded">TIER 1 (VASCULAR)</span></div>
+                    <p class="text-xs text-slate-600 mt-1">${t.proto_apob_desc.replace('{val}', apob.toFixed(0))}</p>
                 </div>`;
             }
             if (tyg > 8.5) {
-                html += `<div class="p-3.5 rounded-lg bg-white border-l-4 border-l-amber-500 border border-slate-200">
-                    <div class="flex justify-between items-center"><span class="font-bold text-slate-800">Protokół Resensytyzacji Insulinowej (TyG)</span><span class="text-xs bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded">TIER 2 (METABOLIC)</span></div>
-                    <p class="text-xs text-slate-600 mt-1">TyG: ${tyg.toFixed(2)} (>8.5). Interwencja: Trening oporowy + Berberyna/Metformina + ograniczenie fruktozy.</p>
+                html += `<div class="p-4 rounded-lg bg-white border-l-4 border-l-amber-500 border border-slate-200">
+                    <div class="flex justify-between items-center"><span class="font-bold text-slate-800">${t.proto_tyg_title}</span><span class="text-xs bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded">TIER 2 (METABOLIC)</span></div>
+                    <p class="text-xs text-slate-600 mt-1">${t.proto_tyg_desc.replace('{val}', tyg.toFixed(2))}</p>
                 </div>`;
             }
             if (crp > 1.0) {
-                html += `<div class="p-3.5 rounded-lg bg-white border-l-4 border-l-red-500 border border-slate-200">
-                    <div class="flex justify-between items-center"><span class="font-bold text-slate-800">Wyciszanie Inflammagingu Śródbłonka</span><span class="text-xs bg-red-100 text-red-800 font-bold px-2 py-0.5 rounded">TIER 1 (INFLAMMATION)</span></div>
-                    <p class="text-xs text-slate-600 mt-1">hsCRP: ${crp.toFixed(2)} mg/L. Wdrożyć: EPA (2000 mg/d) + Hydroksytyrozol.</p>
+                html += `<div class="p-4 rounded-lg bg-white border-l-4 border-l-red-500 border border-slate-200">
+                    <div class="flex justify-between items-center"><span class="font-bold text-slate-800">${t.proto_crp_title}</span><span class="text-xs bg-red-100 text-red-800 font-bold px-2 py-0.5 rounded">TIER 1 (INFLAMMATION)</span></div>
+                    <p class="text-xs text-slate-600 mt-1">${t.proto_crp_desc.replace('{val}', crp.toFixed(2))}</p>
                 </div>`;
             }
-            document.getElementById('protocol_container').innerHTML = html || `<p class='text-sm text-teal-700 font-bold'>Wszystkie parametry w strefie optymalnej długowieczności.</p>`;
+            document.getElementById('protocol_container').innerHTML = html || `<p class='text-sm text-teal-700 font-bold'>${t.bio_optimal}</p>`;
         }
 
         function renderPGx(t) {
@@ -864,12 +883,17 @@
             }
         }
 
-        function renderFHIR(age, pheno_age, dunedin_pace, mort, tyg, apob) {
+        function renderFHIR(age, pheno_age, dunedin_pace, tyg, apob, mort) {
             const fhir = {
                 resourceType: "DiagnosticReport",
                 id: `PAT-AETERNA-V2-${Math.round(age)}`,
                 status: "final",
-                code: { coding: [{ system: "https://aeternacore.ai/fhir", code: "MULTI-OMIC-LONGEVITY-V2" }] },
+                code: {
+                    coding: [{
+                        system: "https://aeternacore.ai/fhir",
+                        code: "MULTI-OMIC-LONGEVITY-V2"
+                    }]
+                },
                 conclusion: `PhenoAge: ${pheno_age.toFixed(1)}y. DunedinPACE: ${dunedin_pace.toFixed(2)}. TyG Index: ${tyg.toFixed(2)}. ApoB: ${apob.toFixed(0)} mg/dL. 10y Mortality: ${(mort*100).toFixed(2)}%.`
             };
             document.getElementById('fhir_json').innerText = JSON.stringify(fhir, null, 2);
@@ -881,7 +905,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = "FHIR_DiagnosticReport_AeternaCore_v2.json";
+            a.download = "FHIR_DiagnosticReport_AeternaCore_V2.json";
             a.click();
         }
 
@@ -895,8 +919,11 @@
             window.dispatchEvent(new Event('resize'));
         }
 
+        // Inicjalizacja
         document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', runEngine));
-        window.onload = runEngine;
+        window.onload = () => {
+            setLanguage('en'); // Domyślny start w języku angielskim
+        };
     </script>
 </body>
 </html>
