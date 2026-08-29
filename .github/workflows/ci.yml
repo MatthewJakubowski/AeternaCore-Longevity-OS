@@ -1,0 +1,22 @@
+name: AeternaCore Engine CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  biostat-verification:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js (Built-in Test Runner)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Biostatistical & FHIR Determinism Tests
+        run: node --test tests/engine.test.mjs
