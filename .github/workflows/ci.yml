@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js (Built-in Test Runner)
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Run Biostatistical & FHIR Determinism Tests
         run: node --test tests/engine.test.mjs
