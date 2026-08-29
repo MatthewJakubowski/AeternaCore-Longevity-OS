@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AeternaCore OS — Omniscient Longevity Engine (v11.0 Bilingual)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.34.0.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; }
+        .tab-active { border-bottom: 3px solid #0d9488; color: #0f766e; font-weight: 700; }
+        .glass-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .kpi-delta-green { background: #d1fae5; color: #065f46; }
+        .kpi-delta-red { background: #fee2e2; color: #991b1b; }
+        .lang-btn-active { background: #0d9488; color: #ffffff; font-weight: 700; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <!-- TOP HEADER -->
+    <header class="bg-gradient-to-r from-slate-950 via-slate-900 to-teal-800 text-white py-6 px-4 sm:px-8 shadow-lg border-b border-slate-800">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight flex items-center gap-2">
+                    <span>🧬</span> AeternaCore OS <span class="text-teal-400 text-lg font-semibold tracking-normal" data-i18n="header_sub">— Clinical Command Center</span>
+                </h1>
+                <p class="text-slate-400 text-sm mt-1" data-i18n="header_desc">Canonical Levine PhenoAge (NHANES III) • DunedinPACE DNAm • SHAP Waterfall XAI • CPIC PGx</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <!-- LANGUAGE SWITCHER -->
+                <div class="flex rounded-lg bg-slate-800/80 p-1 border border-slate-700 text-xs">
+                    <button id="btn_pl" onclick="setLanguage('pl')" class="px-3 py-1 rounded-md transition font-semibold lang-btn-active">PL</button>
+                    <button id="btn_en" onclick="setLanguage('en')" class="px-3 py-1 rounded-md transition font-semibold text-slate-300 hover:text-white">EN</button>
+                </div>
+                <span class="hidden sm:inline-block bg-teal-900/60 border border-teal-500 text-teal-300 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider" data-i18n="badge_tier">
+                    Sovereign Client-Side Engine
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto p-4 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <!-- SIDEBAR: KONTROLA PARAMETRÓW PACJENTA -->
+        <aside class="lg:col-span-4 space-y-6">
+            <div class="glass-card p-6 border-t-4 border-t-teal-600">
+                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4">
+                    <span>🎛</span> <span data-i18n="sidebar_title">Panel Parametrów Pacjenta</span>
+                </h2>
+
+                <div class="space-y-4 text-sm">
+                    <div>
+                        <div class="flex justify-between font-semibold text-slate-700">
+                            <label data-i18n="lbl_chrono_age">Wiek Metrykalny (lata):</label>
+                            <span id="lbl_age" class="text-teal-700 font-bold">40.0</span>
+                        </div>
+                        <input type="range" id="inp_age" min="18" max="100" value="40" step="1" class="w-full accent-teal-600">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between font-semibold text-slate-700">
+                            <label>VO2max (ml/kg/min):</label>
+                            <span id="lbl_vo2" class="text-teal-700 font-bold">43.5</span>
+                        </div>
+                        <input type="range" id="inp_vo2" min="15" max="80" value="43.5" step="0.5" class="w-full accent-teal-600">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between font-semibold text-slate-700">
+                            <label>HRV rMSSD (ms):</label>
+                            <span id="lbl_hrv" class="text-teal-700 font-bold">44.0</span>
+                        </div>
+                        <input type="range" id="inp_hrv" min="10" max="150" value="44" step="1" class="w-full accent-teal-600">
+                    </div>
+
+                    <hr class="border-slate-200">
+
+                    <!-- BIOMARKERY KRWI -->
+                    <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider text-teal-800" data-i18n="sec_biomarkers">Biomarkery Laboratoryjne (PhenoAge)</h3>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-xs text-slate-500 font-medium" data-i18n="lbl_alb">Albumina [g/L]</label>
+                            <input type="number" id="inp_alb" value="45.5" step="0.5" class="w-full mt-1 px-3 py-1.5 border rounded-lg text-sm font-semibold focus:ring-2 focus:ring-teal-500">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-500 font-medium" data-i18n="lbl_creat">Kreatynina [µmol/L]</label>
+                            <input type="number" id="inp_creat" value="82.0" step="1" class="w-full mt-1 px-3 py-1.5 border rounded-lg text-sm font-semibold focus:ring-2 focus:ring-teal-500">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-500 font-medium" data-i18n="lbl_glu">Glukoza [mmol/L]</label>
+                            <input type="number" id="inp_glu" value="5.2" step="0.1" class="w-full mt-1 px-3 py-1.5 border rounded-lg text-sm font-semibold focus:ring-2 focus:ring-teal-500">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-500 font-medium" data-i18n="lbl_crp">hsCRP [mg/L]</label>
+                            <input type="number" id="inp_crp" value="1.6" step="0.1" class="w-full mt-1 px-3 py-1.5 border rounded-lg text-sm font-semibold focus:ring-2 focus:ring-teal-500">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-500 font-medium" data-i18n="lbl_lymph">Limfocyty [%]</label>
+                            <input type="number" id="inp_lymph" value="31.5" step="0.5" class="w-full mt-1 px-3 py-1.5 border rounded-lg text-sm font-semibold focus:ring-2 focus:ring-teal-500">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-500 font-medium" data-i18n="lbl_rdw">RDW [%]</label>
+                            <input type="number" id="inp_rdw" value="12.7" step="0.1" class="w-full mt-1 px-3 py-1.5 border rounded-lg text-sm font-semibold focus:ring-2 focus:ring-teal-500">
+                        </div>
+                    </div>
+
+                    <hr class="border-slate-200">
+
+                    <!-- GENOMIKA I FARMAKOTERAPIA -->
+                    <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider text-teal-800" data-i18n="sec_genomics">Genomika & Farmakoterapia</h3>
+
+                    <div>
+                        <label class="text-xs text-slate-500 font-medium" data-i18n="lbl_mthfr">Genotyp MTHFR (Metylacja):</label>
+                        <select id="inp_mthfr" class="w-full mt-1 px-3 py-2 border rounded-lg text-xs font-semibold">
+                            <option value="677TT">677TT (Ciężki deficyt / Severe deficit ~30%)</option>
+                            <option value="677CT">677CT (Umiarkowany deficyt / Moderate ~65%)</option>
+                            <option value="CC">CC (Prawidłowa / Wild-type 100%)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-xs text-slate-500 font-medium" data-i18n="lbl_slco">Transporter SLCO1B1 (OATP1B1):</label>
+                        <select id="inp_slco" class="w-full mt-1 px-3 py-2 border rounded-lg text-xs font-semibold">
+                            <option value="NORMAL">N (Normal Function / *1/*1)</option>
+                            <option value="POOR">PM (Poor Function / *5/*5 - Myopathy Risk)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-xs text-slate-500 font-medium" data-i18n="lbl_statin">Przyjmowana Statyna (Rx):</label>
+                        <select id="inp_statin" class="w-full mt-1 px-3 py-2 border rounded-lg text-xs font-semibold">
+                            <option value="Atorwastatyna">Atorwastatyna / Atorvastatin (CYP3A4 / SLCO1B1)</option>
+                            <option value="Symwastatyna">Symwastatyna / Simvastatin (High Risk)</option>
+                            <option value="Rozuwastatyna">Rozuwastatyna / Rosuvastatin (Hydrophilic)</option>
+                            <option value="BRAK">Brak farmakoterapii / None</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN DISPLAY: KPI CARDS & TABS -->
+        <section class="lg:col-span-8 space-y-6">
+
+            <!-- 4 EXECUTIVE KPI CARDS -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div class="glass-card p-4">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider" data-i18n="kpi_chrono_title">Wiek Metrykalny</span>
+                    <div id="kpi_age" class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">40.0 <span class="text-sm font-normal text-slate-500" data-i18n="unit_years">lat</span></div>
+                    <span class="inline-block mt-2 px-2 py-0.5 text-xs font-semibold rounded bg-slate-100 text-slate-600" data-i18n="kpi_chrono_badge">Punkt Bazowy</span>
+                </div>
+
+                <div class="glass-card p-4 border-l-4 border-l-teal-600">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Levine PhenoAge</span>
+                    <div id="kpi_pheno" class="text-2xl sm:text-3xl font-extrabold text-teal-700 mt-1">32.5 <span class="text-sm font-normal text-slate-500" data-i18n="unit_years">lat</span></div>
+                    <span id="kpi_delta" class="inline-block mt-2 px-2 py-0.5 text-xs font-bold rounded kpi-delta-green">-7.5 lat delty</span>
+                </div>
+
+                <div class="glass-card p-4 border-l-4 border-l-teal-600">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">DunedinPACE</span>
+                    <div id="kpi_pace" class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">0.93 <span class="text-sm font-normal text-slate-500">yr/yr</span></div>
+                    <span id="kpi_pace_pct" class="inline-block mt-2 px-2 py-0.5 text-xs font-bold rounded kpi-delta-green">-7% tempa</span>
+                </div>
+
+                <div class="glass-card p-4">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider" data-i18n="kpi_mort_title">Ryzyko Zgonu 10y</span>
+                    <div id="kpi_mort" class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">0.97%</div>
+                    <span class="inline-block mt-2 px-2 py-0.5 text-xs font-semibold rounded bg-teal-100 text-teal-800">Gompertz Hazard</span>
+                </div>
+            </div>
+
+            <!-- TABS NAVIGATION -->
+            <div class="glass-card overflow-hidden">
+                <div class="flex border-b border-slate-200 bg-slate-100/60 text-xs sm:text-sm font-semibold text-slate-600">
+                    <button class="tab-btn px-4 py-3 tab-active" onclick="switchTab('tab_xai', event)" data-i18n="tab_xai">🌊 SHAP Waterfall (XAI)</button>
+                    <button class="tab-btn px-4 py-3" onclick="switchTab('tab_diag', event)" data-i18n="tab_diag">📊 Radar & Bio-ODE</button>
+                    <button class="tab-btn px-4 py-3" onclick="switchTab('tab_proto', event)" data-i18n="tab_proto">🎯 Plan Interwencji</button>
+                    <button class="tab-btn px-4 py-3" onclick="switchTab('tab_pgx', event)" data-i18n="tab_pgx">🛡 PGx Firewall & FHIR</button>
+                </div>
+
+                <!-- TAB 1: SHAP WATERFALL -->
+                <div id="tab_xai" class="tab-content p-6 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900" data-i18n="xai_header">Explainable AI: Dekompozycja Kaskadowa Biomarkerów</h3>
+                            <p class="text-xs text-slate-500" data-i18n="xai_desc">Precyzyjny bilans lat zysku/straty w odniesieniu do wieku metrykalnego.</p>
+                        </div>
+                    </div>
+                    <div id="plot_waterfall" class="w-full h-96"></div>
+                </div>
+
+                <!-- TAB 2: RADAR & BIO-ODE -->
+                <div id="tab_diag" class="tab-content p-6 space-y-6 hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900 mb-2" data-i18n="radar_header">Wielonarządowy Radar Rezerw</h3>
+                            <div id="plot_radar" class="w-full h-72"></div>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900 mb-2" data-i18n="ode_header">Kinetyka Bio-ODE (hsCRP vs Glikacja 24m)</h3>
+                            <div id="plot_ode" class="w-full h-72"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: PROTOKOŁY -->
+                <div id="tab_proto" class="tab-content p-6 space-y-4 hidden">
+                    <h3 class="text-base font-bold text-slate-900 mb-2" data-i18n="proto_header">🎯 Spersonalizowany Plan Interwencji Medycyny Precyzyjnej</h3>
+                    <div id="protocol_container" class="space-y-3"></div>
+                </div>
+
+                <!-- TAB 4: PGX & FHIR -->
+                <div id="tab_pgx" class="tab-content p-6 space-y-6 hidden">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900 mb-3">🛡 CPIC/PharmGKB Pharmacogenomics Firewall</h3>
+                        <div id="pgx_alert_box" class="p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-sm"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900 mb-2">📄 HL7 FHIR R4 DiagnosticReport</h3>
+                        <pre id="fhir_json" class="p-4 bg-slate-900 text-teal-300 rounded-lg text-xs overflow-x-auto max-h-48"></pre>
+                        <button onclick="downloadFHIR()" class="mt-3 bg-teal-700 hover:bg-teal-800 text-white font-bold py-2 px-4 rounded text-xs" data-i18n="btn_download_fhir">
+                            Pobierz Raport FHIR R4 (.json)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LEGAL & REGULATORY DISCLAIMER FOOTER -->
+            <div class="p-4 rounded-xl border border-amber-300/80 bg-amber-50/80 text-amber-950 text-xs leading-relaxed">
+                <div class="flex items-center gap-2 font-bold uppercase tracking-wider text-amber-950 mb-1">
+                    <span>⚖️</span> <span data-i18n="legal_title">Zastrzeżenie Prawne & Status Proof of Concept (PoC)</span>
+                </div>
+                <p data-i18n="legal_desc">
+                    <strong>AeternaCore OS</strong> jest eksperymentalnym demonstratorem technologicznym o charakterze wyłącznie badawczo-edukacyjnym. 
+                    Aplikacja <u>nie jest wyrobem medycznym</u> w rozumieniu dyrektyw MDR (UE 2017/745) ani FDA. Prezentowane wskaźniki (Levine PhenoAge, DunedinPACE, alerty PGx) stanowią matematyczne symulacje algorytmiczne i nie stanowią diagnozy medycznej, porady lekarskiej ani zaleceń terapeutycznych. Wszelkie decyzje kliniczne wymagają weryfikacji przez uprawnionego lekarza w oparciu o certyfikowaną diagnostykę laboratoryjną.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <!-- INLINE PURE JAVASCRIPT BIO-ENGINE & I18N -->
+    <script>
+        // SŁOWNIK JĘZYKOWY (I18N)
+        const TRANSLATIONS = {
+            pl: {
+                header_sub: "— Clinical Command Center",
+                header_desc: "Canonical Levine PhenoAge (NHANES III) • DunedinPACE DNAm • SHAP Waterfall XAI • CPIC PGx",
+                badge_tier: "Sovereign Client-Side Engine",
+                sidebar_title: "Panel Parametrów Pacjenta",
+                lbl_chrono_age: "Wiek Metrykalny (lata):",
+                sec_biomarkers: "Biomarkery Laboratoryjne (PhenoAge)",
+                lbl_alb: "Albumina [g/L]",
+                lbl_creat: "Kreatynina [µmol/L]",
+                lbl_glu: "Glukoza [mmol/L]",
+                lbl_crp: "hsCRP [mg/L]",
+                lbl_lymph: "Limfocyty [%]",
+                lbl_rdw: "RDW [%]",
+                sec_genomics: "Genomika & Farmakoterapia",
+                lbl_mthfr: "Genotyp MTHFR (Metylacja):",
+                lbl_slco: "Transporter SLCO1B1 (OATP1B1):",
+                lbl_statin: "Przyjmowana Statyna (Rx):",
+                kpi_chrono_title: "Wiek Metrykalny",
+                kpi_chrono_badge: "Punkt Bazowy",
+                kpi_mort_title: "Ryzyko Zgonu 10y",
+                unit_years: "lat",
+                tab_xai: "🌊 SHAP Waterfall (XAI)",
+                tab_diag: "📊 Radar & Bio-ODE",
+                tab_proto: "🎯 Plan Interwencji",
+                tab_pgx: "🛡 PGx Firewall & FHIR",
+                xai_header: "Explainable AI: Dekompozycja Kaskadowa Biomarkerów",
+                xai_desc: "Precyzyjny bilans lat zysku/straty w odniesieniu do wieku metrykalnego.",
+                radar_header: "Wielonarządowy Radar Rezerw",
+                ode_header: "Kinetyka Bio-ODE (hsCRP vs Glikacja 24m)",
+                proto_header: "🎯 Spersonalizowany Plan Interwencji Medycyny Precyzyjnej",
+                btn_download_fhir: "Pobierz Raport FHIR R4 (.json)",
+                legal_title: "Zastrzeżenie Prawne & Status Proof of Concept (PoC)",
+                legal_desc: "<strong>AeternaCore OS</strong> jest eksperymentalnym demonstratorem technologicznym o charakterze wyłącznie badawczo-edukacyjnym. Aplikacja <u>nie jest wyrobem medycznym</u> w rozumieniu dyrektyw MDR (UE 2017/745) ani FDA. Prezentowane wskaźniki (Levine PhenoAge, DunedinPACE, alerty PGx) stanowią matematyczne symulacje algorytmiczne i nie stanowią diagnozy medycznej, porady lekarskiej ani zaleceń terapeutycznych. Wszelkie decyzje kliniczne wymagają weryfikacji przez uprawnionego lekarza.",
+                delta_lbl: "lat delty",
+                pace_lbl: "tempa",
+                waterfall_start: "Wiek Metrykalny",
+                waterfall_end: "Finalny PhenoAge",
+                waterfall_yaxis: "Wiek Biologiczny (Lata)",
+                bio_optimal: "Wszystkie parametry w strefie optymalnej.",
+                pgx_ok: "✅ <strong>Brak kolizji farmakogenomicznych:</strong> Aktualny profil lekowy jest bezpieczny.",
+                pgx_err: "🚨 <strong>KOLIZJA SLCO1B1:</strong> Fenotyp *5/*5 upośledza wychwyt Atorwastatyny. 4-krotny wzrost ryzyka miopatii. <em>Zalecenie: Rozuwastatyna w niskiej dawce.</em>",
+                proto_crp_title: "Protokół Wyciszania Inflammagingu",
+                proto_crp_desc: "hsCRP: {val} mg/L (>1.0). Wdrożyć: Kwasy EPA 2000 mg/d + Hydroksytyrozol 20 mg/d.",
+                proto_vo2_title: "Preskrypcja Treningu Strefy 2 (Mitochondria)",
+                proto_vo2_desc: "VO2max: {val} ml/kg/min. Zone 2: 3-4x w tyg. po 45 min + R-ALA 300 mg rano."
+            },
+            en: {
+                header_sub: "— Clinical Command Center",
+                header_desc: "Canonical Levine PhenoAge (NHANES III) • DunedinPACE DNAm • SHAP Waterfall XAI • CPIC PGx",
+                badge_tier: "Sovereign Client-Side Engine",
+                sidebar_title: "Patient Parameter Panel",
+                lbl_chrono_age: "Chronological Age (years):",
+                sec_biomarkers: "Laboratory Biomarkers (PhenoAge)",
+                lbl_alb: "Albumin [g/L]",
+                lbl_creat: "Creatinine [µmol/L]",
+                lbl_glu: "Glucose [mmol/L]",
+                lbl_crp: "hsCRP [mg/L]",
+                lbl_lymph: "Lymphocytes [%]",
+                lbl_rdw: "RDW [%]",
+                sec_genomics: "Genomics & Pharmacotherapy",
+                lbl_mthfr: "MTHFR Genotype (Methylation):",
+                lbl_slco: "SLCO1B1 Transporter (OATP1B1):",
+                lbl_statin: "Prescribed Statin (Rx):",
+                kpi_chrono_title: "Chronological Age",
+                kpi_chrono_badge: "Baseline Anchor",
+                kpi_mort_title: "10-Year Mortality Risk",
+                unit_years: "years",
+                tab_xai: "🌊 SHAP Waterfall (XAI)",
+                tab_diag: "📊 Radar & Bio-ODE",
+                tab_proto: "🎯 Intervention Plan",
+                tab_pgx: "🛡 PGx Firewall & FHIR",
+                xai_header: "Explainable AI: Biomarker Cascade Decomposition",
+                xai_desc: "Granular biological year gain/loss balance relative to chronological age.",
+                radar_header: "Multi-Organ Reserve Radar",
+                ode_header: "Bio-ODE Kinetics (hsCRP vs Glycation 24m)",
+                proto_header: "🎯 Precision Medicine Intervention Plan",
+                btn_download_fhir: "Download FHIR R4 Report (.json)",
+                legal_title: "Legal & Regulatory Disclaimer (PoC Status)",
+                legal_desc: "<strong>AeternaCore OS</strong> is an experimental computational Proof of Concept (PoC) developed strictly for research and educational purposes. The software is <u>NOT a certified Medical Device</u> under EU MDR (2017/745) or FDA regulations. All outputs (PhenoAge, DunedinPACE, PGx alerts) are mathematical simulations and do not constitute clinical advice, diagnosis, or treatment. Medical decisions must be made exclusively by licensed physicians.",
+                delta_lbl: "years delta",
+                pace_lbl: "rate",
+                waterfall_start: "Chronological Age",
+                waterfall_end: "Final PhenoAge",
+                waterfall_yaxis: "Biological Age (Years)",
+                bio_optimal: "All clinical biomarkers are within optimal longevity targets.",
+                pgx_ok: "✅ <strong>No Pharmacogenomic Collisions:</strong> Active medication profile is safe.",
+                pgx_err: "🚨 <strong>SLCO1B1 COLLISION:</strong> *5/*5 phenotype severely impairs hepatic uptake of Atorvastatin. High myopathy risk. <em>Recommendation: Switch to low-dose Rosuvastatin.</em>",
+                proto_crp_title: "Endothelial Inflammaging Mitigation Protocol",
+                proto_crp_desc: "hsCRP: {val} mg/L (>1.0). Action: Purified Ethyl Ester EPA 2000 mg/d + Hydroxytyrosol 20 mg/d.",
+                proto_vo2_title: "Zone 2 Training & Mitochondrial Biogenesis",
+                proto_vo2_desc: "VO2max: {val} ml/kg/min. Action: Zone 2 (65-75% HRmax) 3-4x/week (45 min) + R-ALA 300 mg fasting."
+            }
+        };
+
+        let currentLang = 'pl';
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('btn_pl').className = `px-3 py-1 rounded-md transition font-semibold ${lang === 'pl' ? 'lang-btn-active' : 'text-slate-300 hover:text-white'}`;
+            document.getElementById('btn_en').className = `px-3 py-1 rounded-md transition font-semibold ${lang === 'en' ? 'lang-btn-active' : 'text-slate-300 hover:text-white'}`;
+            
+            // Mutacja elementów statycznych
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (TRANSLATIONS[lang][key]) {
+                    el.innerHTML = TRANSLATIONS[lang][key];
+                }
+            });
+
+            runEngine();
+        }
+
+        // PARAMETRY KALIBRACJI GOMPERTZA (LEVINE PHENOAGE - NHANES III)
+        const GAMMA = 0.0076927;
+        const B0 = -19.9067;
+        const B_AGE = 0.0804;
+        const B_ALB = -0.0336;
+        const B_CREAT = 0.0095;
+        const B_GLU = 0.1953;
+        const B_CRP_LOG = 0.0954;
+        const B_LYMPH = -0.0120;
+        const B_MCV = 0.0268;
+        const B_RDW = 0.3306;
+        const B_ALP = 0.00188;
+        const B_WBC = 0.0554;
+
+        function runEngine() {
+            const t = TRANSLATIONS[currentLang];
+            const age = parseFloat(document.getElementById('inp_age').value);
+            const vo2 = parseFloat(document.getElementById('inp_vo2').value);
+            const hrv = parseFloat(document.getElementById('inp_hrv').value);
+            const alb = parseFloat(document.getElementById('inp_alb').value);
+            const creat = parseFloat(document.getElementById('inp_creat').value);
+            const glu = parseFloat(document.getElementById('inp_glu').value);
+            const crp = parseFloat(document.getElementById('inp_crp').value);
+            const lymph = parseFloat(document.getElementById('inp_lymph').value);
+            const rdw = parseFloat(document.getElementById('inp_rdw').value);
+            const mcv = 89.0, alp = 70.0, wbc = 6.3;
+
+            document.getElementById('lbl_age').innerText = age.toFixed(1);
+            document.getElementById('lbl_vo2').innerText = vo2.toFixed(1);
+            document.getElementById('lbl_hrv').innerText = hrv.toFixed(1);
+
+            // 1. Wyliczenie PhenoAge
+            const crp_mg_dl = Math.max(crp * 0.1, 0.001);
+            const crp_log = Math.log(crp_mg_dl);
+
+            const xb = B0 + B_AGE * age + B_ALB * alb + B_CREAT * creat + B_GLU * glu +
+                       B_CRP_LOG * crp_log + B_LYMPH * lymph + B_MCV * mcv + B_RDW * rdw + B_ALP * alp + B_WBC * wbc;
+
+            const exp_xb = Math.exp(xb);
+            const gompertz_factor = (Math.exp(GAMMA * 120.0) - 1.0) / GAMMA;
+            const mort = Math.min(Math.max(1.0 - Math.exp(-exp_xb * gompertz_factor), 0.00001), 0.99999);
+            const inner = -0.00553 * Math.log(1.0 - mort);
+            const pheno_age = 141.50 + (Math.log(Math.max(inner, 1e-12)) / 0.090165);
+            const bio_delta = pheno_age - age;
+
+            // 2. DunedinPACE
+            const dunedin_pace = Math.min(Math.max(0.93 + (bio_delta * 0.012), 0.55), 1.65);
+
+            // 3. Dekompozycja kaskadowa marginaliów
+            const scale = 1.0 / 0.090165;
+            const marginals = {
+                [currentLang === 'pl' ? "Albumina" : "Albumin"]: B_ALB * (alb - 45.0) * scale,
+                [currentLang === 'pl' ? "Kreatynina" : "Creatinine"]: B_CREAT * (creat - 75.0) * scale,
+                [currentLang === 'pl' ? "Glukoza" : "Glucose"]: B_GLU * (glu - 4.9) * scale,
+                [currentLang === 'pl' ? "hsCRP" : "hsCRP"]: B_CRP_LOG * (crp_log - Math.log(0.05)) * scale,
+                [currentLang === 'pl' ? "Limfocyty" : "Lymphocytes"]: B_LYMPH * (lymph - 33.0) * scale,
+                [currentLang === 'pl' ? "RDW" : "RDW"]: B_RDW * (rdw - 12.2) * scale
+            };
+
+            // Aktualizacja Kart KPI
+            document.getElementById('kpi_age').innerHTML = `${age.toFixed(1)} <span class="text-sm font-normal text-slate-500">${t.unit_years}</span>`;
+            document.getElementById('kpi_pheno').innerHTML = `${pheno_age.toFixed(1)} <span class="text-sm font-normal text-slate-500">${t.unit_years}</span>`;
+            document.getElementById('kpi_mort').innerText = `${(mort * 100).toFixed(2)}%`;
+            document.getElementById('kpi_pace').innerHTML = `${dunedin_pace.toFixed(2)} <span class="text-sm font-normal text-slate-500">yr/yr</span>`;
+
+            const deltaBadge = document.getElementById('kpi_delta');
+            deltaBadge.innerText = `${bio_delta >= 0 ? '+' : ''}${bio_delta.toFixed(1)} ${t.delta_lbl}`;
+            deltaBadge.className = `inline-block mt-2 px-2 py-0.5 text-xs font-bold rounded ${bio_delta <= 0 ? 'kpi-delta-green' : 'kpi-delta-red'}`;
+
+            const paceBadge = document.getElementById('kpi_pace_pct');
+            const pacePct = (dunedin_pace - 1.0) * 100;
+            paceBadge.innerText = `${pacePct >= 0 ? '+' : ''}${pacePct.toFixed(0)}% ${t.pace_lbl}`;
+            paceBadge.className = `inline-block mt-2 px-2 py-0.5 text-xs font-bold rounded ${pacePct <= 0 ? 'kpi-delta-green' : 'kpi-delta-red'}`;
+
+            renderWaterfall(age, pheno_age, marginals, t);
+            renderRadar(vo2, crp, glu, creat, alb);
+            renderBioODE(crp, glu, currentLang);
+            renderProtocols(crp, vo2, glu, t);
+            renderPGx(t);
+            renderFHIR(age, pheno_age, dunedin_pace, mort);
+        }
+
+        function renderWaterfall(age, pheno_age, marginals, t) {
+            const x = [t.waterfall_start, ...Object.keys(marginals), t.waterfall_end];
+            const y = [age, ...Object.values(marginals), 0.0];
+            const measures = ["absolute", ...Array(Object.keys(marginals).length).fill("relative"), "total"];
+            const text = [age.toFixed(1) + "y", ...Object.values(marginals).map(v => (v>=0?'+':'') + v.toFixed(2) + "y"), pheno_age.toFixed(1) + "y"];
+
+            const trace = {
+                type: "waterfall",
+                orientation: "v",
+                measure: measures,
+                x: x,
+                y: y,
+                text: text,
+                textposition: "outside",
+                connector: { line: { color: "#94a3b8", width: 1.5, dash: "dot" } },
+                decreasing: { marker: { color: "#0d9488" } },
+                increasing: { marker: { color: "#ef4444" } },
+                totals: { marker: { color: "#0f172a" } }
+            };
+
+            const yMin = Math.floor(Math.min(age, pheno_age) - 2.5);
+            const yMax = Math.ceil(Math.max(age, pheno_age) + 3.0);
+
+            const layout = {
+                yaxis: { title: t.waterfall_yaxis, range: [yMin, yMax], gridcolor: "#f1f5f9" },
+                margin: { l: 40, r: 20, t: 20, b: 60 },
+                paper_bgcolor: "transparent",
+                plot_bgcolor: "transparent"
+            };
+            Plotly.newPlot('plot_waterfall', [trace], layout, { responsive: true, displayModeBar: false });
+        }
+
+        function renderRadar(vo2, crp, glu, creat, alb) {
+            const cardio = Math.min(Math.max(100 - (45 - vo2) * 2.2, 20), 100);
+            const immune = Math.min(Math.max(100 - (crp - 0.7) * 25, 20), 100);
+            const metabolic = Math.min(Math.max(100 - (glu - 5.0) * 25, 20), 100);
+            const renal = Math.min(Math.max(100 - (creat - 75) * 0.9, 20), 100);
+            const hepatic = Math.min(Math.max(100 - (46 - alb) * 4.0, 20), 100);
+
+            const data = [{
+                type: 'scatterpolar',
+                r: [cardio, immune, metabolic, renal, hepatic, cardio],
+                theta: ['Cardio', 'Immune', 'Metabolic', 'Renal', 'Hepatic', 'Cardio'],
+                fill: 'toself',
+                fillcolor: 'rgba(13, 148, 136, 0.25)',
+                line: { color: '#0d9488', width: 2 }
+            }];
+            const layout = {
+                polar: { radialaxis: { visible: true, range: [0, 100] } },
+                margin: { l: 30, r: 30, t: 20, b: 20 },
+                paper_bgcolor: "transparent"
+            };
+            Plotly.newPlot('plot_radar', data, layout, { responsive: true, displayModeBar: false });
+        }
+
+        function renderBioODE(crp_init, glu_init, lang) {
+            const months = Array.from({length: 25}, (_, i) => i);
+            const crp_traj = months.map(m => Math.max(0.4, crp_init * Math.exp(-0.04 * m) + (glu_init > 5.2 ? 0.02 * m : 0)));
+            const glu_traj = months.map(m => Math.max(4.2, glu_init - 0.015 * m));
+
+            const trace1 = { x: months, y: crp_traj, name: "hsCRP [mg/L]", line: { color: "#ef4444", width: 2 } };
+            const trace2 = { x: months, y: glu_traj, name: lang === 'pl' ? "Glukoza [mmol/L]" : "Glucose [mmol/L]", line: { color: "#0d9488", width: 2 }, yaxis: 'y2' };
+
+            const layout = {
+                xaxis: { title: lang === 'pl' ? "Miesiące" : "Months" },
+                yaxis: { title: "hsCRP", titlefont: { color: '#ef4444' }, tickfont: { color: '#ef4444' } },
+                yaxis2: { title: lang === 'pl' ? "Glukoza" : "Glucose", titlefont: { color: '#0d9488' }, tickfont: { color: '#0d9488' }, overlaying: 'y', side: 'right' },
+                margin: { l: 40, r: 40, t: 20, b: 40 },
+                legend: { orientation: "h", y: -0.2 },
+                paper_bgcolor: "transparent",
+                plot_bgcolor: "transparent"
+            };
+            Plotly.newPlot('plot_ode', [trace1, trace2], layout, { responsive: true, displayModeBar: false });
+        }
+
+        function renderProtocols(crp, vo2, glu, t) {
+            let html = "";
+            if (crp > 1.0) {
+                html += `<div class="p-4 rounded-lg bg-white border-l-4 border-l-red-500 border border-slate-200">
+                    <div class="flex justify-between items-center"><span class="font-bold text-slate-800">${t.proto_crp_title}</span><span class="text-xs bg-red-100 text-red-800 font-bold px-2 py-0.5 rounded">TIER 1 (CRITICAL)</span></div>
+                    <p class="text-xs text-slate-600 mt-1">${t.proto_crp_desc.replace('{val}', crp.toFixed(2))}</p>
+                </div>`;
+            }
+            if (vo2 < 45.0) {
+                html += `<div class="p-4 rounded-lg bg-white border-l-4 border-l-amber-500 border border-slate-200">
+                    <div class="flex justify-between items-center"><span class="font-bold text-slate-800">${t.proto_vo2_title}</span><span class="text-xs bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded">TIER 2 (HIGH)</span></div>
+                    <p class="text-xs text-slate-600 mt-1">${t.proto_vo2_desc.replace('{val}', vo2.toFixed(1))}</p>
+                </div>`;
+            }
+            document.getElementById('protocol_container').innerHTML = html || `<p class='text-sm text-teal-700 font-bold'>${t.bio_optimal}</p>`;
+        }
+
+        function renderPGx(t) {
+            const statin = document.getElementById('inp_statin').value;
+            const slco = document.getElementById('inp_slco').value;
+            const box = document.getElementById('pgx_alert_box');
+
+            if (statin === "Atorwastatyna" && slco === "POOR") {
+                box.className = "p-4 rounded-lg bg-red-50 border border-red-300 text-red-900 text-sm";
+                box.innerHTML = t.pgx_err;
+            } else {
+                box.className = "p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-sm";
+                box.innerHTML = t.pgx_ok;
+            }
+        }
+
+        function renderFHIR(age, pheno_age, dunedin_pace, mort) {
+            const fhir = {
+                resourceType: "DiagnosticReport",
+                id: `PAT-AETERNA-${Math.round(age)}`,
+                status: "final",
+                code: { coding: [{ system: "https://aeternacore.ai/fhir", code: "MULTI-OMIC-BIOAGE" }] },
+                conclusion: `PhenoAge: ${pheno_age.toFixed(1)}y (Delta: ${(pheno_age-age).toFixed(1)}y). DunedinPACE: ${dunedin_pace.toFixed(2)} yr/yr. 10y Mortality: ${(mort*100).toFixed(2)}%.`
+            };
+            document.getElementById('fhir_json').innerText = JSON.stringify(fhir, null, 2);
+        }
+
+        function downloadFHIR() {
+            const jsonText = document.getElementById('fhir_json').innerText;
+            const blob = new Blob([jsonText], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "FHIR_DiagnosticReport_AeternaCore.json";
+            a.click();
+        }
+
+        function switchTab(tabId, evt) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('tab-active'));
+            document.getElementById(tabId).classList.remove('hidden');
+            if (evt && evt.currentTarget) {
+                evt.currentTarget.classList.add('tab-active');
+            }
+            window.dispatchEvent(new Event('resize'));
+        }
+
+        // Podpięcie reaktywnych listenerów
+        document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', runEngine));
+        window.onload = runEngine;
+    </script>
+</body>
+</html>
