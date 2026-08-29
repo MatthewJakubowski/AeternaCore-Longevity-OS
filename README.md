@@ -14,6 +14,7 @@ license: mit
 ### *Clinical Biostatistics • Epigenetic Clocks • Explainable AI (SHAP Waterfall) • HL7 FHIR R4 • CPIC PGx*
 
 [![Hugging Face Space](https://img.shields.io/badge/🤗%20Hugging%20Face-Live%20Demo-teal.svg)](https://huggingface.co/spaces/matthewjakubowski/aeternacore-longevity-os)
+[![CI Verification](https://github.com/MatthewJakubowski/AeternaCore-Longevity-OS/actions/workflows/ci.yml/badge.svg)](https://github.com/MatthewJakubowski/AeternaCore-Longevity-OS/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-teal.svg)](https://opensource.org/licenses/MIT)
 [![Standards: HL7 FHIR R4](https://img.shields.io/badge/Standards-HL7%20FHIR%20R4%20%7C%20LOINC-firebrick.svg)](https://hl7.org/fhir/)
 [![CPIC PGx Guidelines](https://img.shields.io/badge/Pharmacogenomics-CPIC%20%7C%20PharmGKB-emerald.svg)](https://cpicpgx.org/)
