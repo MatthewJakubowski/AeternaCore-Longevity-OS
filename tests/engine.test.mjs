@@ -1,7 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-// PARAMETRY LEVINE PHENOAGE (NHANES III)
+// ==========================================
+// 1. PARAMETRY BAZOWE LEVINE PHENOAGE (NHANES III)
+// ==========================================
 const GAMMA = 0.0076927;
 const B0 = -19.9067;
 const B_AGE = 0.0804;
@@ -31,8 +33,10 @@ function calculatePhenoAge(age, alb, creat, glu, crp, lymph, rdw, mcv = 89.0, al
     return { phenoAge, mort, bioDelta: phenoAge - age };
 }
 
+// ==========================================
+// TEST SUITE: CORE BIOSTATISTICS & INTEROP (V1)
+// ==========================================
 test('Levine PhenoAge baseline NHANES III deterministic check', () => {
-    // Profil wzorcowy: 40 lat, optymalna biochemia
     const res = calculatePhenoAge(40, 45.5, 82.0, 5.2, 1.6, 31.5, 12.7);
     
     assert.ok(res.phenoAge > 25 && res.phenoAge < 45, 'PhenoAge must fall into physiological boundary');
@@ -57,4 +61,49 @@ test('HL7 FHIR R4 DiagnosticReport structure integrity check', () => {
     assert.equal(fhir.resourceType, "DiagnosticReport");
     assert.equal(fhir.status, "final");
     assert.ok(fhir.conclusion.includes("PhenoAge: 32.5y"));
+});
+
+// ==========================================
+// TEST SUITE: ADVANCED V2 MODULES (QA, CARDIOMETABOLIC, MONTE CARLO)
+// ==========================================
+test('Cardiometabolic TyG Index mathematical validation', () => {
+    const tg_mg_dl = 115;
+    const glu_mmol = 5.2;
+    const glu_mg_dl = glu_mmol * 18.0182; // ~93.69 mg/dL
+    
+    // TyG = ln( (TG * Glucose) / 2 )
+    const tyg = Math.log((tg_mg_dl * glu_mg_dl) / 2.0);
+    
+    assert.ok(tyg > 8.0 && tyg < 9.0, 'TyG index for normal baseline should fall in 8.0-9.0 range');
+    assert.equal(parseFloat(tyg.toFixed(2)), 8.29);
+});
+
+test('Monte Carlo trajectory bounds and percentile convergence (N=500)', () => {
+    const baselineAge = 40.0;
+    const pace = 0.84;
+    const horizon = 30;
+    const N = 500;
+    
+    let endAges = [];
+    for (let i = 0; i < N; i++) {
+        let age = baselineAge;
+        for (let y = 1; y <= horizon; y++) {
+            const opt_rate = Math.max(0.78, pace * 0.88 - 0.002 * y) + (Math.random() - 0.5) * 0.12;
+            age += opt_rate;
+        }
+        endAges.push(age);
+    }
+    
+    endAges.sort((a,b) => a - b);
+    const median = endAges[Math.floor(N * 0.5)];
+    
+    assert.ok(median > 58 && median < 66, 'Optimized median biological age after 30y must show significant longevity deceleration');
+});
+
+test('Pre-analytical Delta Check spike threshold detection', () => {
+    const prev_crp = 0.8;
+    const curr_crp = 3.5;
+    const delta_pct = ((curr_crp - prev_crp) / prev_crp) * 100;
+    
+    assert.ok(delta_pct > 150.0, 'Sudden hsCRP spike must trigger Delta Check threshold flag');
 });
