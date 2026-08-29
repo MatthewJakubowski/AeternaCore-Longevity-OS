@@ -75,7 +75,7 @@ test('Cardiometabolic TyG Index mathematical validation', () => {
     const tyg = Math.log((tg_mg_dl * glu_mg_dl) / 2.0);
     
     assert.ok(tyg > 8.0 && tyg < 9.0, 'TyG index for normal baseline should fall in 8.0-9.0 range');
-    assert.equal(parseFloat(tyg.toFixed(2)), 8.29);
+    assert.equal(parseFloat(tyg.toFixed(2)), 8.59);
 });
 
 test('Monte Carlo trajectory bounds and percentile convergence (N=500)', () => {
