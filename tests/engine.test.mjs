@@ -101,11 +101,12 @@ function evaluateLISLadder(hil, glu, creat, crp, prev_crp) {
 // ==========================================================================
 // TEST SUITE: V3.0 CLINICAL BIOSTATISTICS & MULTI-ORGAN DETERMINISM
 // ==========================================================================
+
 test('01. Levine PhenoAge baseline NHANES III deterministic check', () => {
     const res = calculatePhenoAge(40, 45.5, 82.0, 5.2, 1.6, 31.5, 12.7);
     
-    assert.ok(res.phenoAge > 30.0 && res.phenoAge < 35.0, 'PhenoAge baseline for healthy adult must fall into 30-35y range');
-    assert.equal(parseFloat(res.phenoAge.toFixed(1)), 32.5);
+    assert.ok(res.phenoAge >= 30.0 && res.phenoAge <= 35.0, 'PhenoAge baseline for healthy adult must fall into 30-35y range');
+    assert.equal(res.phenoAge.toFixed(1), "32.5");
     assert.ok(res.mort > 0 && res.mort < 0.02, '10y mortality risk must be < 2% for baseline');
     assert.ok(!Number.isNaN(res.phenoAge), 'PhenoAge computation must not produce NaN');
 });
@@ -113,17 +114,15 @@ test('01. Levine PhenoAge baseline NHANES III deterministic check', () => {
 test('02. Renal Reserve eGFR (CKD-EPI 2021 raceless) mathematical validation', () => {
     const egfr = calculateCKDEPI2021(82.0, 40);
     
-    // Dla 40-latka ze stężeniem kreatyniny 82 µmol/L (0.927 mg/dL) wynik eGFR wynosi ~106.8 ml/min/1.73m2 (Stadium G1)
     assert.ok(egfr >= 90.0, 'Baseline eGFR must indicate G1 normal filtration rate');
-    assert.equal(parseFloat(egfr.toFixed(1)), 106.8);
+    assert.equal(egfr.toFixed(1), "106.8");
 });
 
 test('03. Hepatic Fibrosis FIB-4 Index calculation and non-cirrhotic rule', () => {
     const fib4 = calculateFIB4(40, 24, 22, 235);
     
-    // FIB-4 = (40 * 24) / (235 * sqrt(22)) = 960 / (235 * 4.69) = ~0.87
     assert.ok(fib4 < 1.30, 'Baseline FIB-4 must be in low-risk F0-F1 category (< 1.30)');
-    assert.equal(parseFloat(fib4.toFixed(2)), 0.87);
+    assert.equal(fib4.toFixed(2), "0.87");
 });
 
 test('04. ESC SCORE2 10-year CVD cardiovascular risk estimation (Poland High Risk)', () => {
@@ -132,7 +131,7 @@ test('04. ESC SCORE2 10-year CVD cardiovascular risk estimation (Poland High Ris
 
     assert.ok(score2_non_smoker < 3.0, 'Baseline SCORE2 for non-smoker must fall in low-to-moderate risk (< 3.0%)');
     assert.ok(score2_smoker > score2_non_smoker, 'Smoking must significantly escalate 10y CVD hazard');
-    assert.equal(parseFloat(score2_non_smoker.toFixed(1)), 1.6);
+    assert.equal(score2_non_smoker.toFixed(1), "1.6");
 });
 
 test('05. Mitochondrial Zone 2 FatMax aerobic heart rate targeting', () => {
@@ -147,12 +146,13 @@ test('06. Cardiometabolic TyG Index sensitivity and cutoff boundary', () => {
     const tyg = calculateTyG(115, 5.2);
     
     assert.ok(tyg > 8.0 && tyg < 9.0, 'TyG index for normal baseline should fall into 8.0-9.0 range');
-    assert.equal(parseFloat(tyg.toFixed(2)), 8.59);
+    assert.equal(tyg.toFixed(2), "8.59");
 });
 
 // ==========================================================================
 // TEST SUITE: LIS QUALITY ASSURANCE & ISO 15189:2023 AUTOVALIDATION
 // ==========================================================================
+
 test('07. ISO 15189 LIS Autovalidation ladder decisions', () => {
     // Standardowy zwalidowany profil
     assert.equal(evaluateLISLadder("CLEAR", 5.2, 82.0, 1.6, 0.9), "AUTOPASS");
@@ -183,6 +183,7 @@ test('08. CPIC Pharmacogenomic SLCO1B1/MTHFR drug-gene safety rules', () => {
 // ==========================================================================
 // TEST SUITE: HEALTH DATA INTEROPERABILITY & HL7 FHIR PL BASE
 // ==========================================================================
+
 test('09. HL7 FHIR PL Base DiagnosticReport schema compliance', () => {
     const age = 40;
     const phenoAge = 32.5;
@@ -233,7 +234,7 @@ test('10. Monte Carlo stochastic trajectory bounds and longevity deceleration (N
         endAges.push(age);
     }
     
-    endAges.sort((a,b) => a - b);
+    endAges.sort((a, b) => a - b);
     const median = endAges[Math.floor(N * 0.5)];
     const p10 = endAges[Math.floor(N * 0.1)];
     const p90 = endAges[Math.floor(N * 0.9)];
