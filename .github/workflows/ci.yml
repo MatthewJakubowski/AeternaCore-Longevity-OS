@@ -5,19 +5,20 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   biostat-verification:
     name: Verify Biostatistical & ISO 15189 Engines
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js (Built-in Test Runner)
+      - name: Setup Node.js 22 LTS
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Run Biostatistical, LIS & FHIR Determinism Suite
-        run: node --test tests/engine.test.mjs
+      - name: Run Biostatistical, LIS & FHIR Determinism Tests
+        run: node --test --test-reporter=spec tests/engine.test.mjs
