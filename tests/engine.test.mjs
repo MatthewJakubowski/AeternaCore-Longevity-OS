@@ -1,9 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-// ==========================================
-// 1. PARAMETRY BAZOWE LEVINE PHENOAGE (NHANES III)
-// ==========================================
+// ==========================================================================
+// 1. SILNIK BIOSTATYSTYCZNY: LEVINE PHENOAGE (NHANES III GOMPERTZ)
+// ==========================================================================
 const GAMMA = 0.0076927;
 const B0 = -19.9067;
 const B_AGE = 0.0804;
@@ -33,62 +33,201 @@ function calculatePhenoAge(age, alb, creat, glu, crp, lymph, rdw, mcv = 89.0, al
     return { phenoAge, mort, bioDelta: phenoAge - age };
 }
 
-// ==========================================
-// TEST SUITE: CORE BIOSTATISTICS & INTEROP (V1)
-// ==========================================
-test('Levine PhenoAge baseline NHANES III deterministic check', () => {
+// ==========================================================================
+// 2. SILNIKI REZERW NARZĄDOWYCH (eGFR, FIB-4, SCORE2, ZONE 2)
+// ==========================================================================
+function calculateCKDEPI2021(creat_umol, age) {
+    const scr_mg_dl = creat_umol / 88.42;
+    const min_scr = Math.min(scr_mg_dl / 0.9, 1.0);
+    const max_scr = Math.max(scr_mg_dl / 0.9, 1.0);
+    return 142.0 * Math.pow(min_scr, -0.302) * Math.pow(max_scr, -1.200) * Math.pow(0.9938, age);
+}
+
+function calculateFIB4(age, ast, alt, plt) {
+    if (plt <= 0 || alt <= 0) return 0;
+    return (age * ast) / (plt * Math.sqrt(alt));
+}
+
+function calculateSCORE2(age, sbp, apob, isSmoker = false) {
+    const nonHdl_mmol = Math.max(apob * 0.035, 2.5);
+    const age_f = (age - 40.0) * 0.12;
+    const sbp_f = (sbp - 120.0) * 0.025;
+    const lip_f = (nonHdl_mmol - 3.5) * 0.35;
+    const smk_f = isSmoker ? 1.45 : 0.0;
+    return Math.min(Math.max(1.8 * Math.exp(age_f + sbp_f + lip_f + smk_f), 1.0), 45.0);
+}
+
+function calculateZone2FatMax(age, vo2) {
+    const hr_max = 220 - age;
+    const hrr = hr_max - 60;
+    const vo2_corr = (vo2 - 40.0) * 0.25;
+    const z2_low = Math.round(60 + (0.60 * hrr) + vo2_corr);
+    const z2_high = Math.round(60 + (0.72 * hrr) + vo2_corr);
+    return { z2_low, z2_high };
+}
+
+function calculateTyG(tg_mg_dl, glu_mmol) {
+    const glu_mg_dl = glu_mmol * 18.0182;
+    return Math.log((tg_mg_dl * glu_mg_dl) / 2.0);
+}
+
+// ==========================================================================
+// 3. DRABINA AUTOWALIDACJI LIS GUARD (PN-EN ISO 15189:2023-02)
+// ==========================================================================
+function evaluateLISLadder(hil, glu, creat, crp, prev_crp) {
+    let status = "AUTOPASS";
+
+    // Poziom 2: Spektrofotometria HIL
+    if (hil === "HEMOLYSIS" || hil === "LIPEMIA") {
+        return "HELD FOR REVIEW";
+    }
+
+    // Poziom 3: Wartości paniczne / krytyczne
+    if (glu < 2.2 || glu > 25.0 || creat > 350.0) {
+        return "CRITICAL ALERT";
+    }
+
+    // Poziom 4: Podłużny Delta Check 90d
+    if (prev_crp > 0) {
+        const delta_pct = ((crp - prev_crp) / prev_crp) * 100.0;
+        if (Math.abs(delta_pct) > 200.0 && crp > 3.0) {
+            return "DELTA HELD";
+        }
+    }
+
+    return status;
+}
+
+// ==========================================================================
+// TEST SUITE: V3.0 CLINICAL BIOSTATISTICS & MULTI-ORGAN DETERMINISM
+// ==========================================================================
+test('01. Levine PhenoAge baseline NHANES III deterministic check', () => {
     const res = calculatePhenoAge(40, 45.5, 82.0, 5.2, 1.6, 31.5, 12.7);
     
-    assert.ok(res.phenoAge > 25 && res.phenoAge < 45, 'PhenoAge must fall into physiological boundary');
-    assert.ok(res.mort > 0 && res.mort < 0.05, '10y mortality risk for young healthy baseline must be < 5%');
-    assert.ok(!Number.isNaN(res.phenoAge), 'PhenoAge must not produce NaN');
+    assert.ok(res.phenoAge > 30.0 && res.phenoAge < 35.0, 'PhenoAge baseline for healthy adult must fall into 30-35y range');
+    assert.equal(parseFloat(res.phenoAge.toFixed(1)), 32.5);
+    assert.ok(res.mort > 0 && res.mort < 0.02, '10y mortality risk must be < 2% for baseline');
+    assert.ok(!Number.isNaN(res.phenoAge), 'PhenoAge computation must not produce NaN');
 });
 
-test('HL7 FHIR R4 DiagnosticReport structure integrity check', () => {
+test('02. Renal Reserve eGFR (CKD-EPI 2021 raceless) mathematical validation', () => {
+    const egfr = calculateCKDEPI2021(82.0, 40);
+    
+    // Dla 40-latka ze stężeniem kreatyniny 82 µmol/L (0.927 mg/dL) wynik eGFR wynosi ~106.8 ml/min/1.73m2 (Stadium G1)
+    assert.ok(egfr >= 90.0, 'Baseline eGFR must indicate G1 normal filtration rate');
+    assert.equal(parseFloat(egfr.toFixed(1)), 106.8);
+});
+
+test('03. Hepatic Fibrosis FIB-4 Index calculation and non-cirrhotic rule', () => {
+    const fib4 = calculateFIB4(40, 24, 22, 235);
+    
+    // FIB-4 = (40 * 24) / (235 * sqrt(22)) = 960 / (235 * 4.69) = ~0.87
+    assert.ok(fib4 < 1.30, 'Baseline FIB-4 must be in low-risk F0-F1 category (< 1.30)');
+    assert.equal(parseFloat(fib4.toFixed(2)), 0.87);
+});
+
+test('04. ESC SCORE2 10-year CVD cardiovascular risk estimation (Poland High Risk)', () => {
+    const score2_non_smoker = calculateSCORE2(40, 122, 88, false);
+    const score2_smoker = calculateSCORE2(40, 122, 88, true);
+
+    assert.ok(score2_non_smoker < 3.0, 'Baseline SCORE2 for non-smoker must fall in low-to-moderate risk (< 3.0%)');
+    assert.ok(score2_smoker > score2_non_smoker, 'Smoking must significantly escalate 10y CVD hazard');
+    assert.equal(parseFloat(score2_non_smoker.toFixed(1)), 1.6);
+});
+
+test('05. Mitochondrial Zone 2 FatMax aerobic heart rate targeting', () => {
+    const z2 = calculateZone2(40, 43.5);
+    
+    assert.ok(z2.z2_low >= 125 && z2.z2_low <= 135, 'Zone 2 floor for 40y baseline should be ~133 bpm');
+    assert.ok(z2.z2_high >= 140 && z2.z2_high <= 150, 'Zone 2 ceiling for 40y baseline should be ~147 bpm');
+    assert.ok(z2.z2_high > z2.z2_low, 'High threshold must exceed low threshold');
+});
+
+test('06. Cardiometabolic TyG Index sensitivity and cutoff boundary', () => {
+    const tyg = calculateTyG(115, 5.2);
+    
+    assert.ok(tyg > 8.0 && tyg < 9.0, 'TyG index for normal baseline should fall into 8.0-9.0 range');
+    assert.equal(parseFloat(tyg.toFixed(2)), 8.59);
+});
+
+// ==========================================================================
+// TEST SUITE: LIS QUALITY ASSURANCE & ISO 15189:2023 AUTOVALIDATION
+// ==========================================================================
+test('07. ISO 15189 LIS Autovalidation ladder decisions', () => {
+    // Standardowy zwalidowany profil
+    assert.equal(evaluateLISLadder("CLEAR", 5.2, 82.0, 1.6, 0.9), "AUTOPASS");
+
+    // Faza przedanalityczna: błąd hemolizy
+    assert.equal(evaluateLISLadder("HEMOLYSIS", 5.2, 82.0, 1.6, 0.9), "HELD FOR REVIEW");
+
+    // Poziom 3: Wartości paniczne (hipoglikemia krytyczna)
+    assert.equal(evaluateLISLadder("CLEAR", 1.9, 82.0, 1.6, 0.9), "CRITICAL ALERT");
+
+    // Poziom 4: Nagły skok hsCRP (Delta Check Spike > 200%)
+    assert.equal(evaluateLISLadder("CLEAR", 5.2, 82.0, 6.8, 0.5), "DELTA HELD");
+});
+
+test('08. CPIC Pharmacogenomic SLCO1B1/MTHFR drug-gene safety rules', () => {
+    const slco_poor = "POOR";
+    const statin_atorva = "Atorwastatyna";
+    const statin_simva = "Symwastatyna";
+    const statin_rosuva = "Rozuwastatyna";
+
+    const isCollision = (slco, statin) => (slco === "POOR" && (statin === "Atorwastatyna" || statin === "Symwastatyna"));
+    
+    assert.ok(isCollision(slco_poor, statin_atorva), 'SLCO1B1 *5/*5 with Atorvastatin must trigger PGx collision alert');
+    assert.ok(isCollision(slco_poor, statin_simva), 'SLCO1B1 *5/*5 with Simvastatin must trigger contraindication');
+    assert.ok(!isCollision(slco_poor, statin_rosuva), 'Rosuvastatin must bypass SLCO1B1 hepatic clearance bottleneck safely');
+});
+
+// ==========================================================================
+// TEST SUITE: HEALTH DATA INTEROPERABILITY & HL7 FHIR PL BASE
+// ==========================================================================
+test('09. HL7 FHIR PL Base DiagnosticReport schema compliance', () => {
     const age = 40;
     const phenoAge = 32.5;
     const pace = 0.84;
+    const tyg = 8.59;
+    const apob = 88;
+    const egfr = 106.8;
+    const fib4 = 0.87;
+    const score2 = 1.6;
     const mort = 0.0097;
+    const status = "AUTOPASS";
 
     const fhir = {
         resourceType: "DiagnosticReport",
-        id: `PAT-AETERNA-${Math.round(age)}`,
-        status: "final",
-        code: { coding: [{ system: "https://aeternacore.ai/fhir", code: "MULTI-OMIC-BIOAGE" }] },
-        conclusion: `PhenoAge: ${phenoAge.toFixed(1)}y (Delta: ${(phenoAge-age).toFixed(1)}y). DunedinPACE: ${pace.toFixed(2)} yr/yr. 10y Mortality: ${(mort*100).toFixed(2)}%.`
+        id: `PAT-AETERNA-V3-${Math.round(age)}`,
+        meta: {
+            profile: ["https://aeternacore.org/fhir/StructureDefinition/pl-base-longevity-report"]
+        },
+        status: status === "AUTOPASS" ? "final" : "preliminary",
+        category: [{
+            coding: [{ system: "http://terminology.hl7.org/CodeSystem/v2-0074", code: "LAB", display: "Laboratory" }]
+        }],
+        code: {
+            coding: [{ system: "https://loinc.org", code: "LONGEVITY-BIOAGE-CORE", display: "Comprehensive Longevity & Organ Reserve Report" }]
+        },
+        conclusion: `PhenoAge: ${phenoAge.toFixed(1)}y. DunedinPACE: ${pace.toFixed(2)}. TyG Index: ${tyg.toFixed(2)}. eGFR (CKD-EPI 2021): ${egfr.toFixed(1)} ml/min. FIB-4: ${fib4.toFixed(2)}. ESC SCORE2: ${score2.toFixed(1)}%. ApoB: ${apob.toFixed(0)} mg/dL. 10y Mortality: ${(mort*100).toFixed(2)}%. LIS Status: ${status}.`
     };
 
     assert.equal(fhir.resourceType, "DiagnosticReport");
     assert.equal(fhir.status, "final");
-    assert.ok(fhir.conclusion.includes("PhenoAge: 32.5y"));
+    assert.ok(fhir.meta.profile[0].includes("aeternacore.org"), 'Must point to clean sovereign schema');
+    assert.ok(fhir.conclusion.includes("eGFR (CKD-EPI 2021): 106.8 ml/min"));
+    assert.ok(fhir.conclusion.includes("FIB-4: 0.87"));
 });
 
-// ==========================================
-// TEST SUITE: ADVANCED V2 MODULES (QA, CARDIOMETABOLIC, MONTE CARLO)
-// ==========================================
-test('Cardiometabolic TyG Index mathematical validation', () => {
-    const tg_mg_dl = 115;
-    const glu_mmol = 5.2;
-    const glu_mg_dl = glu_mmol * 18.0182; // ~93.69 mg/dL
-    
-    // TyG = ln( (TG * Glucose) / 2 )
-    const tyg = Math.log((tg_mg_dl * glu_mg_dl) / 2.0);
-    
-    assert.ok(tyg > 8.0 && tyg < 9.0, 'TyG index for normal baseline should fall in 8.0-9.0 range');
-    assert.equal(parseFloat(tyg.toFixed(2)), 8.59);
-});
-
-test('Monte Carlo trajectory bounds and percentile convergence (N=500)', () => {
-    const baselineAge = 40.0;
-    const pace = 0.84;
+test('10. Monte Carlo stochastic trajectory bounds and longevity deceleration (N=500)', () => {
+    const baselinePheno = 32.5;
     const horizon = 30;
     const N = 500;
     
     let endAges = [];
     for (let i = 0; i < N; i++) {
-        let age = baselineAge;
+        let age = baselinePheno;
         for (let y = 1; y <= horizon; y++) {
-            const opt_rate = Math.max(0.78, pace * 0.88 - 0.002 * y) + (Math.random() - 0.5) * 0.12;
+            const opt_rate = 0.82 + (Math.random() - 0.5) * 0.10;
             age += opt_rate;
         }
         endAges.push(age);
@@ -96,14 +235,9 @@ test('Monte Carlo trajectory bounds and percentile convergence (N=500)', () => {
     
     endAges.sort((a,b) => a - b);
     const median = endAges[Math.floor(N * 0.5)];
+    const p10 = endAges[Math.floor(N * 0.1)];
+    const p90 = endAges[Math.floor(N * 0.9)];
     
-    assert.ok(median > 58 && median < 66, 'Optimized median biological age after 30y must show significant longevity deceleration');
-});
-
-test('Pre-analytical Delta Check spike threshold detection', () => {
-    const prev_crp = 0.8;
-    const curr_crp = 3.5;
-    const delta_pct = ((curr_crp - prev_crp) / prev_crp) * 100;
-    
-    assert.ok(delta_pct > 150.0, 'Sudden hsCRP spike must trigger Delta Check threshold flag');
+    assert.ok(median > 54.0 && median < 60.0, 'Optimized 30y biological median must decelerate aging significantly (~57.1y vs 70.0y)');
+    assert.ok(p10 < median && p90 > median, 'P10-P90 stochastic confidence bands must enclose the median');
 });
