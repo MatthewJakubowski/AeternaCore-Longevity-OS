@@ -8,6 +8,7 @@ on:
 
 jobs:
   biostat-verification:
+    name: Verify Biostatistical & ISO 15189 Engines
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -18,5 +19,5 @@ jobs:
         with:
           node-version: 22
 
-      - name: Run Biostatistical & FHIR Determinism Tests
+      - name: Run Biostatistical, LIS & FHIR Determinism Suite
         run: node --test tests/engine.test.mjs
