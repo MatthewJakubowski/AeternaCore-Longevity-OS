@@ -663,7 +663,7 @@
                 </div>
                 <div class="text-right text-[7.5pt]">
                     <p><span id="p_lbl_sample">Specimen UID:</span> <strong class="font-mono">SMP-2026-99120</strong></p>
-                    <p><span data-i18n="p_status_lbl">Status:</span> <strong class="text-teal-800">AUTOPASS (65% AVR)</strong> | <strong id="print_timestamp_1">2026-08-29 21:30 UTC</strong></p>
+                    <p><span data-i18n="p_status_lbl">Status:</span> <strong class="text-teal-800">AUTOPASS (65% AVR)</strong> | <strong id="print_timestamp_1">2026-08-30 16:30 UTC</strong></p>
                 </div>
             </div>
 
@@ -838,9 +838,9 @@
                         </ul>
                     </div>
                     <div class="bg-slate-950 text-emerald-400 p-1.5 rounded font-mono-code text-[6pt] overflow-hidden leading-relaxed">
-                        [2026-08-29T21:30:00Z] [LIS_INGEST] Specimen SMP-2026-99120 ingested from Central LIS.<br>
-                        [2026-08-29T21:30:01Z] [ISO_15189_GATE] Level 1 SQC: PASS | Level 2 HIL: CLEAR | Level 4 Delta: VERIFIED.<br>
-                        [2026-08-29T21:30:02Z] [AUTOVAL_DECISION] Final Decision: AUTOPASS (65% AVR). Release to EDM.
+                        [2026-08-30T16:30:00Z] [LIS_INGEST] Specimen SMP-2026-99120 ingested from Central LIS.<br>
+                        [2026-08-30T16:30:01Z] [ISO_15189_GATE] Level 1 SQC: PASS | Level 2 HIL: CLEAR | Level 4 Delta: VERIFIED.<br>
+                        [2026-08-30T16:30:02Z] [AUTOVAL_DECISION] Final Decision: AUTOPASS (65% AVR). Release to EDM.
                     </div>
                 </div>
             </div>
@@ -1261,6 +1261,9 @@
 
         let currentLang = 'pl';
 
+        // Globalny stan parametrów do synchronizacji eksportu
+        let globalCalcState = {};
+
         function populateSelect(selectId, options) {
             const select = document.getElementById(selectId);
             if (!select) return;
@@ -1422,6 +1425,7 @@
             const tg = parseFloat(document.getElementById('inp_tg').value);
             const hdl = parseFloat(document.getElementById('inp_hdl').value);
             const hil = document.getElementById('inp_hil').value;
+            const mthfr = document.getElementById('inp_mthfr').value;
             const slco = document.getElementById('inp_slco').value;
             const statin = document.getElementById('inp_statin').value;
             const mcv = 89.0, alp = 70.0, wbc = 6.3;
@@ -1597,6 +1601,45 @@
                 [currentLang === 'pl' ? "RDW" : "RDW"]: B_RDW * (rdw - 12.2) * scale
             };
 
+            // Zapis do stanu globalnego dla potrójnego eksportera
+            globalCalcState = {
+                timestamp: nowIso,
+                specimen_uid: "SMP-2026-99120",
+                chrono_age: age,
+                pheno_age: pheno_age,
+                bio_delta: bio_delta,
+                dunedin_pace: dunedin_pace,
+                egfr: egfr,
+                fib4: fib4,
+                score2_pct: score2_pct,
+                tyg_index: tyg_index,
+                apob: apob,
+                tg: tg,
+                hdl: hdl,
+                remnant_chol: remnant_chol,
+                alb: alb,
+                creat: creat,
+                glu: glu,
+                crp: crp,
+                prev_crp: prev_crp,
+                lymph: lymph,
+                rdw: rdw,
+                plt: plt,
+                ast: ast,
+                alt: alt,
+                sbp: sbp,
+                vo2: vo2,
+                hrv: hrv,
+                hil: hil,
+                autoval_status: autoval_status,
+                slco: slco,
+                mthfr: mthfr,
+                statin: statin,
+                statin_red_pct: statin_red_pct,
+                expected_apob: expected_apob,
+                mort: mort
+            };
+
             renderWaterfall(age, pheno_age, marginals, t);
             renderCardiometabolics(tyg_index, apob, remnant_chol);
             renderMonteCarlo(age, pheno_age, t);
@@ -1605,7 +1648,7 @@
             renderBioODE(crp, glu, currentLang);
             renderProtocols(apob, tyg_index, crp, t);
             renderPGx(t);
-            renderFHIR(age, pheno_age, dunedin_pace, tyg_index, apob, mort);
+            renderFHIR();
 
             syncFull3PagePrintDOM(age, pheno_age, bio_delta, dunedin_pace, tyg_index, egfr, fib4, score2_pct, z2_low, z2_high, alb, creat, glu, crp, lymph, rdw, plt, ast, alt, apob, tg, hdl, remnant_chol, slco, statin, marginals, t, vo2);
         }
@@ -2023,30 +2066,261 @@
             }
         }
 
-        function renderFHIR(age, pheno_age, dunedin_pace, tyg, apob, mort) {
-            const fhir = {
-                resourceType: "DiagnosticReport",
-                id: `PAT-AETERNA-V2-${Math.round(age)}`,
-                status: "final",
-                code: {
-                    coding: [{
-                        system: "https://aeternacore.ai/fhir",
-                        code: "MULTI-OMIC-LONGEVITY-V2"
-                    }]
+        /* ==========================================================================
+           TRIPLE EXPORTER ENGINE: HL7 FHIR R4, OSOZ EDM XML & DATA SCIENCE CSV
+           ========================================================================== */
+
+        function buildFHIRBundle() {
+            const s = globalCalcState;
+            const reportId = `REP-${s.specimen_uid}-${Math.round(s.chrono_age)}`;
+
+            const observations = [
+                { id: "obs-alb", loinc: "1751-7", display: "Serum Albumin", val: s.alb, unit: "g/L", low: 35.0, high: 52.0 },
+                { id: "obs-creat", loinc: "2160-0", display: "Serum Creatinine", val: s.creat, unit: "umol/L", low: 62.0, high: 106.0 },
+                { id: "obs-glu", loinc: "2345-7", display: "Fasting Plasma Glucose", val: s.glu, unit: "mmol/L", low: 3.9, high: 5.5 },
+                { id: "obs-crp", loinc: "30522-7", display: "High-Sensitivity CRP", val: s.crp, unit: "mg/L", low: 0.0, high: 1.0 },
+                { id: "obs-lymph", loinc: "26474-7", display: "Lymphocyte Percentage", val: s.lymph, unit: "%", low: 20.0, high: 45.0 },
+                { id: "obs-rdw", loinc: "789-8", display: "Red Cell Distribution Width", val: s.rdw, unit: "%", low: 11.5, high: 14.5 },
+                { id: "obs-plt", loinc: "777-3", display: "Platelet Count", val: s.plt, unit: "10*9/L", low: 150.0, high: 450.0 },
+                { id: "obs-ast", loinc: "1920-8", display: "AST Transaminase", val: s.ast, unit: "U/L", low: 0.0, high: 35.0 },
+                { id: "obs-alt", loinc: "1742-6", display: "ALT Transaminase", val: s.alt, unit: "U/L", low: 0.0, high: 45.0 },
+                { id: "obs-apob", loinc: "1884-6", display: "Apolipoprotein B", val: s.apob, unit: "mg/dL", low: 40.0, high: 80.0 },
+                { id: "obs-tg", loinc: "2571-8", display: "Triglycerides", val: s.tg, unit: "mg/dL", low: 50.0, high: 150.0 },
+                { id: "obs-hdl", loinc: "2085-9", display: "HDL Cholesterol", val: s.hdl, unit: "mg/dL", low: 40.0, high: 60.0 },
+                { id: "obs-egfr", loinc: "33914-3", display: "eGFR CKD-EPI 2021", val: parseFloat(s.egfr.toFixed(1)), unit: "mL/min/1.73m2", low: 90.0, high: 140.0 },
+                { id: "obs-fib4", loinc: "FIB4-CALC", display: "Hepatic Fibrosis Index (FIB-4)", val: parseFloat(s.fib4.toFixed(2)), unit: "{score}", low: 0.0, high: 1.30 },
+                { id: "obs-tyg", loinc: "TYG-CALC", display: "TyG Index (Triglyceride-Glucose)", val: parseFloat(s.tyg_index.toFixed(2)), unit: "{score}", low: 0.0, high: 8.5 },
+                { id: "obs-pheno", loinc: "PHENOAGE-CALC", display: "Levine Biological PhenoAge", val: parseFloat(s.pheno_age.toFixed(1)), unit: "a", low: 0.0, high: 100.0 },
+                { id: "obs-pace", loinc: "PACE-CALC", display: "DunedinPACE Biological Pace", val: parseFloat(s.dunedin_pace.toFixed(2)), unit: "a/a", low: 0.6, high: 1.0 },
+                { id: "obs-score2", loinc: "SCORE2-CALC", display: "ESC SCORE2 10-Year CVD Risk", val: parseFloat(s.score2_pct.toFixed(1)), unit: "%", low: 0.0, high: 5.0 }
+            ];
+
+            const bundle = {
+                resourceType: "Bundle",
+                id: `BUNDLE-${s.specimen_uid}`,
+                meta: {
+                    lastUpdated: s.timestamp,
+                    profile: ["http://hl7.org.pl/fhir/StructureDefinition/pl-base-diagnostic-report"]
                 },
-                conclusion: `PhenoAge: ${pheno_age.toFixed(1)}y. DunedinPACE: ${dunedin_pace.toFixed(2)}. TyG Index: ${tyg.toFixed(2)}. ApoB: ${apob.toFixed(0)} mg/dL. 10y Mortality: ${(mort*100).toFixed(2)}%.`
+                type: "document",
+                timestamp: s.timestamp,
+                entry: [
+                    {
+                        fullUrl: `urn:uuid:${reportId}`,
+                        resource: {
+                            resourceType: "DiagnosticReport",
+                            id: reportId,
+                            identifier: [{ system: "urn:ietf:rfc:3986", value: s.specimen_uid }],
+                            status: "final",
+                            category: [{
+                                coding: [{
+                                    system: "http://terminology.hl7.org/CodeSystem/v2-0074",
+                                    code: "LAB",
+                                    display: "Laboratory"
+                                }]
+                            }],
+                            code: {
+                                coding: [{
+                                    system: "http://loinc.org",
+                                    code: "11502-2",
+                                    display: "Laboratory report"
+                                }, {
+                                    system: "https://aeternacore.ai/fhir",
+                                    code: "MULTI-OMIC-LONGEVITY-V3",
+                                    display: "Multi-Omic LIS & Longevity Autovalidated Panel"
+                                }]
+                            },
+                            subject: {
+                                reference: "Patient/PAT-SOVEREIGN-MALE-40",
+                                display: "Sovereign Health Demonstrator Cohort"
+                            },
+                            effectiveDateTime: s.timestamp,
+                            issued: s.timestamp,
+                            performer: [{
+                                display: "AeternaCore OS LIS Engine (PN-EN ISO 15189:2023-02 Autovalidator)"
+                            }],
+                            result: observations.map(o => ({ reference: `urn:uuid:${o.id}`, display: o.display })),
+                            conclusion: `Autovalidation: ${s.autoval_status}. Chronological Age: ${s.chrono_age.toFixed(1)}y | PhenoAge: ${s.pheno_age.toFixed(1)}y (Delta: ${s.bio_delta >= 0 ? '+' : ''}${s.bio_delta.toFixed(1)}y). DunedinPACE: ${s.dunedin_pace.toFixed(2)}. TyG: ${s.tyg_index.toFixed(2)}. ApoB: ${s.apob.toFixed(0)} mg/dL. SLCO1B1: ${s.slco} | MTHFR: ${s.mthfr} | Statin: ${s.statin}. 10Y Mortality Hazard: ${(s.mort*100).toFixed(2)}%.`
+                        }
+                    },
+                    ...observations.map(o => ({
+                        fullUrl: `urn:uuid:${o.id}`,
+                        resource: {
+                            resourceType: "Observation",
+                            id: o.id,
+                            status: "final",
+                            code: {
+                                coding: [{
+                                    system: "http://loinc.org",
+                                    code: o.loinc,
+                                    display: o.display
+                                }]
+                            },
+                            valueQuantity: {
+                                value: o.val,
+                                unit: o.unit,
+                                system: "http://unitsofmeasure.org",
+                                code: o.unit
+                            },
+                            referenceRange: [{
+                                low: { value: o.low, unit: o.unit },
+                                high: { value: o.high, unit: o.unit }
+                            }]
+                        }
+                    }))
+                ]
             };
-            document.getElementById('fhir_json').innerText = JSON.stringify(fhir, null, 2);
+
+            return bundle;
+        }
+
+        function renderFHIR() {
+            const bundle = buildFHIRBundle();
+            document.getElementById('fhir_json').innerText = JSON.stringify(bundle, null, 2);
         }
 
         function downloadFHIR() {
-            const jsonText = document.getElementById('fhir_json').innerText;
+            const bundle = buildFHIRBundle();
+            const jsonText = JSON.stringify(bundle, null, 2);
             const blob = new Blob(["\uFEFF" + jsonText], { type: "application/json;charset=utf-8" });
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = "FHIR_DiagnosticReport_AeternaCore_V2.json";
+            a.download = `HL7_FHIR_DiagnosticReport_${globalCalcState.specimen_uid}.json`;
+            document.body.appendChild(a);
             a.click();
+            document.body.removeChild(a);
+        }
+
+        function downloadEDM_XML() {
+            const s = globalCalcState;
+            const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<ClinicalDocument xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" moodCode="EVN">
+  <realmCode code="PL"/>
+  <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+  <templateId root="2.16.840.1.113883.3.4424.13.10.1.1"/>
+  <id root="2.16.840.1.113883.3.4424" extension="${s.specimen_uid}"/>
+  <code code="11502-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Sprawozdanie z badan laboratoryjnych"/>
+  <title>AeternaCore OS v3.0 - Sprawozdanie Diagnostyczne &amp; Biostatystyczne Longevity</title>
+  <effectiveTime value="${s.timestamp.replace(/[-:]/g, '').split('.')[0]}"/>
+  <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
+  <languageCode code="pl-PL"/>
+  <author>
+    <time value="${s.timestamp.replace(/[-:]/g, '').split('.')[0]}"/>
+    <assignedAuthor>
+      <id root="2.16.840.1.113883.3.4424.1" extension="AETERNA-LIS-ISO15189"/>
+      <assignedPerson>
+        <name>
+          <prefix>System</prefix>
+          <family>AeternaCore OS v3.0 Ultimate</family>
+        </name>
+      </assignedPerson>
+      <representedOrganization>
+        <name>Centrum Diagnostyki Laboratoryjnej i Medycyny Precyzyjnej</name>
+      </representedOrganization>
+    </assignedAuthor>
+  </author>
+  <custodian>
+    <assignedCustodian>
+      <representedCustodianOrganization>
+        <name>Centralny Szpitalny System Informacyjny LIS</name>
+      </representedCustodianOrganization>
+    </assignedCustodian>
+  </custodian>
+  <component>
+    <structuredBody>
+      <component>
+        <section>
+          <code code="18717-9" codeSystem="2.16.840.1.113883.6.1" displayName="Biomarkery Rutynowe &amp; Kardiometaboliczne"/>
+          <title>Wyniki Badan Laboratoryjnych (Standard PN-EN ISO 15189:2023-02)</title>
+          <text>
+            <table>
+              <thead>
+                <tr><th>Badanie</th><th>Kod LOINC</th><th>Wynik</th><th>Jednostka</th><th>Zakres Ref.</th><th>Status</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Albumina w surowicy</td><td>1751-7</td><td>${s.alb.toFixed(1)}</td><td>g/L</td><td>35.0 - 52.0</td><td>NORMAL</td></tr>
+                <tr><td>Kreatynina w surowicy</td><td>2160-0</td><td>${s.creat.toFixed(0)}</td><td>umol/L</td><td>62 - 106</td><td>NORMAL</td></tr>
+                <tr><td>Glukoza na czczo</td><td>2345-7</td><td>${s.glu.toFixed(1)}</td><td>mmol/L</td><td>3.9 - 5.5</td><td>${s.glu > 5.5 ? 'HIGH' : 'NORMAL'}</td></tr>
+                <tr><td>hsCRP</td><td>30522-7</td><td>${s.crp.toFixed(2)}</td><td>mg/L</td><td>&lt; 1.00</td><td>${s.crp > 1.0 ? 'ELEVATED' : 'OPTIMAL'}</td></tr>
+                <tr><td>Odsetek Limfocytow</td><td>26474-7</td><td>${s.lymph.toFixed(1)}</td><td>%</td><td>20.0 - 45.0</td><td>NORMAL</td></tr>
+                <tr><td>Wskaznik Anizocytozy RDW</td><td>789-8</td><td>${s.rdw.toFixed(1)}</td><td>%</td><td>11.5 - 14.5</td><td>NORMAL</td></tr>
+                <tr><td>Plytki Krwi (PLT)</td><td>777-3</td><td>${s.plt.toFixed(0)}</td><td>10^9/L</td><td>150 - 450</td><td>NORMAL</td></tr>
+                <tr><td>AST</td><td>1920-8</td><td>${s.ast.toFixed(0)}</td><td>U/L</td><td>&lt; 35</td><td>NORMAL</td></tr>
+                <tr><td>ALT</td><td>1742-6</td><td>${s.alt.toFixed(0)}</td><td>U/L</td><td>&lt; 45</td><td>NORMAL</td></tr>
+                <tr><td>Apolipoproteina B (ApoB)</td><td>1884-6</td><td>${s.apob.toFixed(0)}</td><td>mg/dL</td><td>&lt; 80</td><td>${s.apob > 80 ? 'ATHEROGENIC' : 'OPTIMAL'}</td></tr>
+                <tr><td>Trojglicerydy (TG)</td><td>2571-8</td><td>${s.tg.toFixed(0)}</td><td>mg/dL</td><td>&lt; 150</td><td>NORMAL</td></tr>
+                <tr><td>HDL-C</td><td>2085-9</td><td>${s.hdl.toFixed(0)}</td><td>mg/dL</td><td>&gt; 40</td><td>NORMAL</td></tr>
+              </tbody>
+            </table>
+          </text>
+        </section>
+      </component>
+      <component>
+        <section>
+          <code code="55112-7" codeSystem="2.16.840.1.113883.6.1" displayName="Biostatystyka i Autowalidacja LIS"/>
+          <title>Wskazniki Dlugowiecznosci, Rezerwy Narzadowe &amp; PGx</title>
+          <text>
+            <list>
+              <item>Status Autowalidacji LIS: ${s.autoval_status}</item>
+              <item>Wiek Metrykalny: ${s.chrono_age.toFixed(1)} lat</item>
+              <item>Wiek Biologiczny Levine PhenoAge: ${s.pheno_age.toFixed(1)} lat (Delta: ${s.bio_delta >= 0 ? '+' : ''}${s.bio_delta.toFixed(1)} lat)</item>
+              <item>Tempo Starzenia DunedinPACE: ${s.dunedin_pace.toFixed(2)} lat/rok</item>
+              <item>Filtracja Klebuszkowa eGFR (CKD-EPI 2021): ${s.egfr.toFixed(1)} ml/min/1.73m2</item>
+              <item>Wskaznik Zwloknienia Watroby FIB-4: ${s.fib4.toFixed(2)}</item>
+              <item>Insulinoopornosc TyG Index: ${s.tyg_index.toFixed(2)}</item>
+              <item>Ryzyko Sercowo-Naczyniowe ESC SCORE2: ${s.score2_pct.toFixed(1)}%</item>
+              <item>Genotyp SLCO1B1: ${s.slco} | Genotyp MTHFR: ${s.mthfr}</item>
+              <item>Statynoterapia: ${s.statin} (Oczekiwana redukcja ApoB: -${s.statin_red_pct}%, do ${s.expected_apob} mg/dL)</item>
+            </list>
+          </text>
+        </section>
+      </component>
+    </structuredBody>
+  </component>
+</ClinicalDocument>`;
+
+            const blob = new Blob(["\uFEFF" + xmlContent], { type: "application/xml;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `EDM_Raport_Laboratoryjny_${s.specimen_uid}.xml`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function downloadResearchCSV() {
+            const s = globalCalcState;
+            const headers = [
+                "timestamp", "specimen_uid", "chrono_age", "pheno_age", "bio_delta", "dunedin_pace",
+                "egfr_ckdepi2021", "fib4_score", "score2_pct", "tyg_index", "apob_mgdl", "remnant_chol_mgdl",
+                "tg_mgdl", "hdl_mgdl", "albumin_gl", "creatinine_umol", "glucose_mmol", "hscrp_mgl",
+                "prev_hscrp_mgl", "lymph_pct", "rdw_pct", "plt_10e9", "ast_ul", "alt_ul",
+                "sbp_mmhg", "vo2max", "hrv_rmssd", "hil_interference", "autovalidation_verdict",
+                "slco1b1_status", "mthfr_genotype", "statin_prescribed", "expected_apob_reduction_pct"
+            ];
+
+            const values = [
+                `"${s.timestamp}"`, `"${s.specimen_uid}"`, s.chrono_age.toFixed(1), s.pheno_age.toFixed(2),
+                s.bio_delta.toFixed(2), s.dunedin_pace.toFixed(3), s.egfr.toFixed(2), s.fib4.toFixed(3),
+                s.score2_pct.toFixed(2), s.tyg_index.toFixed(3), s.apob.toFixed(1), s.remnant_chol.toFixed(1),
+                s.tg.toFixed(1), s.hdl.toFixed(1), s.alb.toFixed(2), s.creat.toFixed(1),
+                s.glu.toFixed(2), s.crp.toFixed(2), s.prev_crp.toFixed(2), s.lymph.toFixed(2),
+                s.rdw.toFixed(2), s.plt.toFixed(0), s.ast.toFixed(1), s.alt.toFixed(1),
+                s.sbp.toFixed(0), s.vo2.toFixed(1), s.hrv.toFixed(1), `"${s.hil}"`,
+                `"${s.autoval_status}"`, `"${s.slco}"`, `"${s.mthfr}"`, `"${s.statin}"`, s.statin_red_pct
+            ];
+
+            const csvData = headers.join(",") + "\n" + values.join(",");
+            const blob = new Blob(["\uFEFF" + csvData], { type: "text/csv;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `Research_Vector_AeternaCore_${s.specimen_uid}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
 
         function switchTab(tabId, evt) {
