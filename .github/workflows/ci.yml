@@ -21,4 +21,4 @@ jobs:
           node-version: 22
 
       - name: Run Biostatistical, LIS & FHIR Determinism Tests
-        run: node tests/engine.test.mjs
+        run: node tests/engine.test.js
